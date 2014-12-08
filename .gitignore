@@ -1,4 +1,8 @@
-.DS_Store
+**/.DS_Store
+**/*.sh
+**/*.db
+ProjectX/aws
+ProjectX/.bck
 *.class
 
 # Mobile Tools for Java (J2ME)
