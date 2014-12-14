@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.techburg.autospring.factory.abstr.IWorkspaceFactory;
 import com.techburg.autospring.model.BasePersistenceQuery.DataRange;
 import com.techburg.autospring.model.WorkspacePersistenceQuery;
+import com.techburg.autospring.model.business.BrowsingObject;
 import com.techburg.autospring.model.business.Workspace;
+import com.techburg.autospring.service.abstr.IBrowsingObjectPersistentService;
 import com.techburg.autospring.service.abstr.IWorkspacePersistenceService;
 import com.techburg.autospring.service.abstr.PersistenceResult;
 import com.techburg.autospring.util.FileUtil;
@@ -23,6 +25,7 @@ import com.techburg.autospring.util.FileUtil;
 public class WorkspaceController {
 	private static final String gWorkspaceListAttributeName = "workspaces";
 	private static final String gWorkspaceIdAttributeName = "workspaceId";
+	private static final String gWorkspaceRootBrowsingObjectIdAttributeName = "workspaceRootBrowsingObjectId";
 	
 	private static final String gScriptFileAvailable = "scriptFileAvailable";
 	private static final String gScriptFileContent = "scriptFileContent";
@@ -31,6 +34,7 @@ public class WorkspaceController {
 	
 	private IWorkspacePersistenceService mWorkspacePersistenceService;
 	private IWorkspaceFactory mWorkspaceFactory;
+	private IBrowsingObjectPersistentService mBrowsingObjectPersistentService;
 
 	@Autowired
 	public void setWorkspacePersistenceService(IWorkspacePersistenceService workspacePersistenceService) {
@@ -40,6 +44,11 @@ public class WorkspaceController {
 	@Autowired
 	public void setWorkspaceFactory(IWorkspaceFactory workspaceFactory) {
 		mWorkspaceFactory = workspaceFactory;
+	}
+	
+	@Autowired
+	public void setBrowsingObjectPersistentService(IBrowsingObjectPersistentService browsingObjectPersistentService) {
+		mBrowsingObjectPersistentService = browsingObjectPersistentService;
 	}
 
 	@RequestMapping(value="/workspace/new", method=RequestMethod.GET)
@@ -81,6 +90,11 @@ public class WorkspaceController {
 
 	@RequestMapping(value="/workspace/detail/{workspaceId}", method=RequestMethod.GET)
 	public String detailWorkspace(Model model, @PathVariable long workspaceId) {
+		Workspace workspace = getWorkspacebyId(workspaceId);
+		if(workspace != null) {
+			BrowsingObject workspaceRootBrowsingObject = mBrowsingObjectPersistentService.getBrowsingObjectByPath(workspace.getDirectoryPath());
+			model.addAttribute(gWorkspaceRootBrowsingObjectIdAttributeName, workspaceRootBrowsingObject.getId());
+		}
 		model.addAttribute(gWorkspaceIdAttributeName, workspaceId);
 		return "workspacedetail";
 	}

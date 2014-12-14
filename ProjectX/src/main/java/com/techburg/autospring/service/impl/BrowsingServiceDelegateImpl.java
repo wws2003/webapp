@@ -2,6 +2,7 @@ package com.techburg.autospring.service.impl;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,13 +19,11 @@ public class BrowsingServiceDelegateImpl implements IBrowsingServiceDelegate {
 
 	private String mBrowsingRootPath;
 	private static final String[] gSupportedFileNames = {"makefile"};
-	private static final String[] gSupportedFileExts = {".c", ".cpp", ".h", ".sh", ".java", ".jsp", ".xml", ".properties", ".js", ".css"};
+	private static final String[] gSupportedFileExts = {".c", ".cpp", ".h", ".sh", ".java", ".jsp", ".xml", ".properties", ".js", ".css", ".log"};
 
 	private FileFilter mDirectoryFilter;
 	private FileFilter mFileFilter;
-	
-	private IBrowsingObjectPersistentService mBrowsingObjectPersistentService;
-	
+
 	public BrowsingServiceDelegateImpl() {
 		mDirectoryFilter = new TbgDirectoryFilter();
 		mFileFilter = new TbgFileFilter();
@@ -34,56 +33,72 @@ public class BrowsingServiceDelegateImpl implements IBrowsingServiceDelegate {
 	public void setBrowsingRootPath(String browsingRootPath) {
 		mBrowsingRootPath = browsingRootPath;
 	}
-	
-	@Autowired
-	public void setBrowsingObjectPersistentService(IBrowsingObjectPersistentService browsingObjectPersistentService) {
-		mBrowsingObjectPersistentService = browsingObjectPersistentService;
-	}
 
 	@Override
-	public int construct() throws Exception {
-		resetConstruction();
-		File rootElement = new File(mBrowsingRootPath);
-		BrowsingObject rootBrowsingObject = createBrowsingObjectFromElement(rootElement, null);
-		recursiveConstruct(rootElement, rootBrowsingObject);
+	public int persistBrowsingObjectInDirectory(String directoryPath, IBrowsingObjectPersistentService browsingObjectPersistentService) {
+		if(directoryPath == null) {
+			//Reconstruct all browsing object DB
+			resetConstruction(browsingObjectPersistentService);
+			File rootElement = new File(mBrowsingRootPath);
+			BrowsingObject rootBrowsingObject = createBrowsingObjectFromElement(rootElement, null, browsingObjectPersistentService);
+			recursiveConstruct(rootElement, rootBrowsingObject, browsingObjectPersistentService);
+		}
+		else {
+			//Add to DB elements in directory given directory path
+			BrowsingObject rootBrowsingObject = browsingObjectPersistentService.getBrowsingObjectById(1);
+			if(rootBrowsingObject != null) {
+				File workspaceRootElement = new File(directoryPath);
+				System.out.println("<<<<<<<<<<<<<To persist elements in directory " + directoryPath + " >>>>>>>>>>>>>>>>>>>>>>>>>>>");
+				BrowsingObject workspaceRootBrowsingObject = createBrowsingObjectFromElement(workspaceRootElement, rootBrowsingObject, browsingObjectPersistentService);
+				recursiveConstruct(workspaceRootElement, workspaceRootBrowsingObject, browsingObjectPersistentService);	
+			}
+		}
 		return 0;
 	}
 
 	@Override
-	public BrowsingObject getBrowsingObjectById(long id) {
-		return mBrowsingObjectPersistentService.getBrowsingObjectById(id);
+	public int removeBrowsingObjectInDirectory(String directoryPath, IBrowsingObjectPersistentService browsingObjectPersistentService) {
+		if(directoryPath == null) {
+			//Remove all browsing object from DB
+			resetConstruction(browsingObjectPersistentService);
+		}
+		else {
+			//Remove all browsing object in directory from DB, given directory path
+			BrowsingObject parentBrowsingObject = browsingObjectPersistentService.getBrowsingObjectByPath(directoryPath);
+			recursiveRemove(parentBrowsingObject , browsingObjectPersistentService);
+		}
+		return 0;
 	}
 
-	@Override
-	public BrowsingObject getRootBrowsingObjectByPath(String path) {
-		return mBrowsingObjectPersistentService.getBrowsingObjectByPath(path);
+	private void resetConstruction(IBrowsingObjectPersistentService browsingObjectPersistentService) {
+		browsingObjectPersistentService.removeAllBrowsingObject();
 	}
 
-	@Override
-	public void getChildBrowsingObject(BrowsingObject parent,
-			List<BrowsingObject> children) {
-		mBrowsingObjectPersistentService.getChildBrowsingObjects(parent, children);
-	}
-	
-	private void resetConstruction() {
-		mBrowsingObjectPersistentService.removeAllBrowsingObject();
+	private void recursiveRemove(BrowsingObject parentBrowsingObject, IBrowsingObjectPersistentService browsingObjectPersistentService) {
+		List<BrowsingObject> childBrowsingObjects = new ArrayList<BrowsingObject>();
+		browsingObjectPersistentService.getChildBrowsingObjects(parentBrowsingObject, childBrowsingObjects);
+		for(BrowsingObject childBrowsingObject : childBrowsingObjects) {
+			recursiveRemove(childBrowsingObject, browsingObjectPersistentService);
+		}
+		if(parentBrowsingObject != null)
+			browsingObjectPersistentService.removeBrowsingObjectById(parentBrowsingObject.getId());
 	}
 
-	private void recursiveConstruct(File element, BrowsingObject browsingObject) {
+	private void recursiveConstruct(File element, BrowsingObject browsingObject, IBrowsingObjectPersistentService browsingObjectPersistentService) {
 		if(element.isDirectory()) {
 			File[] subDirElements = element.listFiles(mDirectoryFilter);
 			for(File subDirElement : subDirElements) {
-				BrowsingObject subBrowsingObject = createBrowsingObjectFromElement(subDirElement, browsingObject);
-				recursiveConstruct(subDirElement, subBrowsingObject);
+				BrowsingObject subBrowsingObject = createBrowsingObjectFromElement(subDirElement, browsingObject, browsingObjectPersistentService);
+				recursiveConstruct(subDirElement, subBrowsingObject, browsingObjectPersistentService);
 			}
 			File[] subFileElements = element.listFiles(mFileFilter);
 			for(File subFileElement : subFileElements) {
-				createBrowsingObjectFromElement(subFileElement, browsingObject);
+				createBrowsingObjectFromElement(subFileElement, browsingObject, browsingObjectPersistentService);
 			}
 		}
 	}
 
-	private BrowsingObject createBrowsingObjectFromElement(File element, BrowsingObject parentBrowsingObject) {
+	private BrowsingObject createBrowsingObjectFromElement(File element, BrowsingObject parentBrowsingObject, IBrowsingObjectPersistentService browsingObjectPersistentService) {
 		BrowsingObject browsingObject = new BrowsingObject();
 		browsingObject.setAbsolutePath(element.getAbsolutePath());
 		browsingObject.setModifiedTime(new Date(element.lastModified()));
@@ -97,7 +112,7 @@ public class BrowsingServiceDelegateImpl implements IBrowsingServiceDelegate {
 			browsingObject.setOpenType(OpenType.OPEN_BY_BROWSER);
 		}
 
-		return (mBrowsingObjectPersistentService.persistBrowsingObject(browsingObject) == PersistenceResult.PERSISTENCE_SUCCESSFUL) ? browsingObject : null;
+		return (browsingObjectPersistentService.persistBrowsingObject(browsingObject) == PersistenceResult.PERSISTENCE_SUCCESSFUL) ? browsingObject : null;
 	}
 
 	private boolean isOpenFileBrowserFile(File file) {
@@ -131,7 +146,7 @@ public class BrowsingServiceDelegateImpl implements IBrowsingServiceDelegate {
 			return file.isDirectory() && !file.getName().startsWith(".");
 		}
 	}
-	
+
 	private class TbgFileFilter implements FileFilter {
 		@Override
 		public boolean accept(File file) {

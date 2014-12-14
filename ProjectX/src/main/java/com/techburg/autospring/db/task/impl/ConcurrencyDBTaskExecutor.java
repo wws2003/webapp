@@ -32,8 +32,8 @@ public abstract class ConcurrencyDBTaskExecutor implements IDBTaskExecutor {
 			@Override
 			public Integer call() throws Exception {
 				Lock currentLock = mDBTaskLockFactory.getReadWriteLockInstanceForDBTask(dbTask);
+				currentLock.lock();
 				try {
-					currentLock.lock();
 					dbTask.execute();
 				} catch (Exception e) {
 					e.printStackTrace();

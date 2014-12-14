@@ -10,4 +10,9 @@ public class NoLockingDBTaskExecutorImpl implements IDBTaskExecutor {
 		dbTask.execute();
 	}
 
+	@Override
+	public void waitAllFinish() {
+		
+	}
+
 }

@@ -33,14 +33,12 @@ public class BuildDataServiceMockImpl implements IBuildDataService {
 	@Override
 	public void getBuildingBuildInfoListOfWorkspace(
 			List<BuildInfo> buildInfoList, long workspaceId) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void getWaitingBuildInfoListOfWorkspace(
 			List<BuildInfo> buildInfoList, long workspaceId) {
-		// TODO Auto-generated method stub
 		
 	}
 }

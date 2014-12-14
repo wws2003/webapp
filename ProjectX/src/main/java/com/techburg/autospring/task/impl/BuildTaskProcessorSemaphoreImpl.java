@@ -8,14 +8,18 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.techburg.autospring.model.business.BuildInfo;
-import com.techburg.autospring.service.abstr.IBrowsingService;
+import com.techburg.autospring.model.business.Workspace;
+import com.techburg.autospring.service.abstr.IBrowsingObjectPersistentService;
+import com.techburg.autospring.service.abstr.IBuildInfoPersistenceService;
 import com.techburg.autospring.task.abstr.IBuildTask;
 import com.techburg.autospring.task.abstr.IBuildTaskProcessor;
 import com.techburg.autospring.task.abstr.IBuildTaskQueue;
 
 public class BuildTaskProcessorSemaphoreImpl implements IBuildTaskProcessor, DisposableBean, InitializingBean {
 
-	private IBrowsingService mBrowsingService;
+	//private IBrowsingService mBrowsingService = null;
+	private IBrowsingObjectPersistentService mBrowsingObjectPersistentService = null;
+	protected IBuildInfoPersistenceService mBuildInfoPersistenceService = null;
 	
 	public BuildTaskProcessorSemaphoreImpl() {
 		mQueueSemaphore = new Semaphore(0);
@@ -27,10 +31,15 @@ public class BuildTaskProcessorSemaphoreImpl implements IBuildTaskProcessor, Dis
 	public void setWaitingBuildTaskQueue(IBuildTaskQueue buildTaskQueue) {
 		mWaitingTaskQueue = buildTaskQueue;
 	}
-
+	
 	@Autowired
-	public void setBrowsingService(IBrowsingService browsingService) {
-		mBrowsingService = browsingService;
+	public void setBuildInfoPersistenceService(IBuildInfoPersistenceService buildInfoPersistenceService) {
+		mBuildInfoPersistenceService = buildInfoPersistenceService;
+	}
+	
+	@Autowired
+	public void setBrowsingObjectPersistentService(IBrowsingObjectPersistentService browsingObjectPersistentService) {
+		mBrowsingObjectPersistentService = browsingObjectPersistentService;
 	}
 	
 	@Override
@@ -131,7 +140,7 @@ public class BuildTaskProcessorSemaphoreImpl implements IBuildTaskProcessor, Dis
 	private void runBuildTasks() {
 		//At the beginning, reconstruct the browsing structure to reflect any changes in folders and files in the workspace
 		try {
-			recontructBrowsingStructure();
+			recontructBrowsingStructure(null);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
@@ -154,9 +163,10 @@ public class BuildTaskProcessorSemaphoreImpl implements IBuildTaskProcessor, Dis
 					mWaitingTaskQueue.setBuildingTask(nextBuildTask);
 					nextBuildTask.execute();
 					BuildInfo buildInfo = new BuildInfo();
-					nextBuildTask.storeToBuildInfo(buildInfo, true);
+					nextBuildTask.storeToBuildInfo(buildInfo, false);
 					mWaitingTaskQueue.setBuildingTask(null);
-					recontructBrowsingStructure();
+					mBuildInfoPersistenceService.persistBuildInfo(buildInfo);
+					recontructBrowsingStructure(nextBuildTask.getWorkspace());
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -164,14 +174,17 @@ public class BuildTaskProcessorSemaphoreImpl implements IBuildTaskProcessor, Dis
 		}
 	}
 	
-	private void recontructBrowsingStructure() throws Exception {
-		if(mBrowsingService != null) {
-			try {
-				mBrowsingService.acquireWriteLock();
-				mBrowsingService.construct();
+	private void recontructBrowsingStructure(Workspace workspace) throws Exception {
+		if(mBrowsingObjectPersistentService != null) {
+			if(workspace == null) {
+				//Entirely reconstruct DB
+				mBrowsingObjectPersistentService.removeBrowsingObjectInDirectory(null, true);
+				mBrowsingObjectPersistentService.persistBrowsingObjectInDirectory(null, true);
 			}
-			finally {
-				mBrowsingService.releaseWriteLock();
+			else {
+				//Partially reconstruct DB
+				mBrowsingObjectPersistentService.removeBrowsingObjectInDirectory(workspace.getDirectoryPath(), true);
+				mBrowsingObjectPersistentService.persistBrowsingObjectInDirectory(workspace.getDirectoryPath(), true);
 			}
 		}
 	}

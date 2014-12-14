@@ -15,6 +15,7 @@ import com.techburg.autospring.model.BasePersistenceQuery.DataRange;
 import com.techburg.autospring.model.WorkspacePersistenceQuery;
 import com.techburg.autospring.model.business.Workspace;
 import com.techburg.autospring.model.entity.WorkspaceEntity;
+import com.techburg.autospring.service.abstr.IBrowsingObjectPersistentService;
 import com.techburg.autospring.service.abstr.PersistenceResult;
 
 public class WorkspaceDBTaskImpl extends AbstractDBTask {
@@ -30,6 +31,7 @@ public class WorkspaceDBTaskImpl extends AbstractDBTask {
 	private Workspace mParamWorkspaceToPersist = null;
 	private Workspace mParamWorkspaceToUpdate = null;
 	private WorkspacePersistenceQuery mParamWorkspaceLoadQuery = null;
+	private IBrowsingObjectPersistentService mParamBrowsingObjectPersistentService = null;
 	private long mParamIdForRemove = -1;
 
 	//Results calculated by execute()
@@ -47,8 +49,9 @@ public class WorkspaceDBTaskImpl extends AbstractDBTask {
 		mEntityManagerFactory = etmFactory;
 	}
 
-	public void setPersistParams(Workspace workspaceToPersist) {
+	public void setPersistParams(Workspace workspaceToPersist, IBrowsingObjectPersistentService browsingObjectPersistentService) {
 		mParamWorkspaceToPersist = workspaceToPersist;
+		mParamBrowsingObjectPersistentService = browsingObjectPersistentService;
 		mTaskType = TASK_TYPE_PERSIST;
 		setDBReadWriteMode(DB_WRITE_MODE);
 	}
@@ -57,10 +60,11 @@ public class WorkspaceDBTaskImpl extends AbstractDBTask {
 		return mResultForPersist;
 	}
 	
-	public void setGetWorkspaceUpdateParam(Workspace workspaceToUpdate) {
+	public void setUpdateParams(Workspace workspaceToUpdate, IBrowsingObjectPersistentService browsingObjectPersistentService) {
 		mParamWorkspaceToUpdate = workspaceToUpdate;
+		mParamBrowsingObjectPersistentService = browsingObjectPersistentService;
 		mTaskType = TASK_TYPE_UPDATE;
-		setDBReadWriteMode(DB_READ_MODE);
+		setDBReadWriteMode(DB_WRITE_MODE);
 	}
 	
 	public long getWorkspaceUpdateResult() {
@@ -129,7 +133,7 @@ public class WorkspaceDBTaskImpl extends AbstractDBTask {
 		finally {
 			entityManager.close();
 		}
-		return PersistenceResult.PERSISTENCE_SUCCESSFUL;
+		return mParamBrowsingObjectPersistentService.persistBrowsingObjectInDirectory(workspace.getDirectoryPath(), true);
 	}
 
 	private int updateWorkspace(Workspace workspace) {
@@ -143,7 +147,9 @@ public class WorkspaceDBTaskImpl extends AbstractDBTask {
 		entity.setScriptFilePath(workspace.getScriptFilePath());
 		tx.commit();
 		entityManager.close();
-		return PersistenceResult.UPDATE_SUCCESSFUL;
+		int removeResult = mParamBrowsingObjectPersistentService.removeBrowsingObjectInDirectory(workspace.getDirectoryPath(), true);
+		int persistResult = mParamBrowsingObjectPersistentService.persistBrowsingObjectInDirectory(workspace.getDirectoryPath(), true);
+		return (removeResult == PersistenceResult.REMOVE_SUCCESSFUL && persistResult == PersistenceResult.PERSISTENCE_SUCCESSFUL) ? PersistenceResult.UPDATE_SUCCESSFUL : PersistenceResult.UPDATE_FAILED ;
 	}
 
 	private int loadWorkspace(List<Workspace> buildInfoList, WorkspacePersistenceQuery query) {

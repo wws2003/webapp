@@ -2,25 +2,26 @@ package com.techburg.autospring.service.impl;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.techburg.autospring.bo.abstr.IBrowsingObjectBo;
+import com.techburg.autospring.db.task.abstr.AbstractDBTask;
+import com.techburg.autospring.db.task.abstr.IDBTaskExecutor;
+import com.techburg.autospring.db.task.impl.BrowsingObjectDBTaskImpl;
+import com.techburg.autospring.db.task.impl.NoLockingDBTaskExecutorImpl;
 import com.techburg.autospring.model.business.BrowsingObject;
-import com.techburg.autospring.model.entity.BrowsingObjectEntity;
 import com.techburg.autospring.service.abstr.IBrowsingObjectPersistentService;
-import com.techburg.autospring.service.abstr.PersistenceResult;
+import com.techburg.autospring.service.abstr.IBrowsingServiceDelegate;
 
 public class BrowsingObjectPersistentJPAImpl implements IBrowsingObjectPersistentService {
 
-	private EntityManagerFactory mEntityManagerFactory;
+	private EntityManagerFactory mEntityManagerFactory = null;
 	private IBrowsingObjectBo mBrowsingObjectBo = null;
-
+	private IDBTaskExecutor mDBTaskExecutor = null;
+	private IBrowsingServiceDelegate mBrowsingServiceDelegate = null; 
+	
 	@Autowired
 	public BrowsingObjectPersistentJPAImpl(EntityManagerFactory entityManagerFactory) {
 		mEntityManagerFactory = entityManagerFactory;
@@ -31,89 +32,85 @@ public class BrowsingObjectPersistentJPAImpl implements IBrowsingObjectPersisten
 		mBrowsingObjectBo = browsingObjectBo;
 	}
 	
+	@Autowired
+	public void setBrowsingServiceDelegate(IBrowsingServiceDelegate browsingServiceDelegate) {
+		mBrowsingServiceDelegate = browsingServiceDelegate;
+	}
+	
+	@Autowired
+	public void setDBTaskExecutor(IDBTaskExecutor dbTaskExecutor) {
+		mDBTaskExecutor = dbTaskExecutor;
+	}
+	
 	@Override
 	public int persistBrowsingObject(BrowsingObject browsingObject) {
-		BrowsingObjectEntity entity = mBrowsingObjectBo.getEntityFromBusinessObject(browsingObject);
-		EntityManager entityManager = mEntityManagerFactory.createEntityManager();
-		EntityTransaction tx = entityManager.getTransaction();
-		try {
-			tx.begin();
-			entityManager.persist(entity);
-			entityManager.detach(entity); //Do not need to manage this object longer !
-			browsingObject.setId(entity.getId());
-			tx.commit();
-		}
-		catch (PersistenceException pe) {
-			pe.printStackTrace();
-			tx.rollback();
-			return PersistenceResult.PERSISTENCE_FAILED;
-		}
-		finally {
-			entityManager.close();
-		}
-		return PersistenceResult.PERSISTENCE_SUCCESSFUL;
+		BrowsingObjectDBTaskImpl persistTask = new BrowsingObjectDBTaskImpl(mBrowsingObjectBo, mEntityManagerFactory);
+		persistTask.setPersistParams(browsingObject);
+		persistTask.setScheduleMode(AbstractDBTask.SCHEDULE_SYNC_MODE);
+		mDBTaskExecutor.executeDBTask(persistTask);
+		return persistTask.getPersistResult();
 	}
 
 	@Override
 	public BrowsingObject getBrowsingObjectById(long id) {
-		EntityManager entityManager = mEntityManagerFactory.createEntityManager();
-		BrowsingObjectEntity entity = entityManager.find(BrowsingObjectEntity.class, id);
-		if(entity != null) {
-			entityManager.detach(entity);
-			return mBrowsingObjectBo.getBusinessObjectFromEntity(entity);
-		}
-		return null;
+		BrowsingObjectDBTaskImpl findTask = new BrowsingObjectDBTaskImpl(mBrowsingObjectBo, mEntityManagerFactory);
+		findTask.setGetByIdParam(id);
+		findTask.setScheduleMode(AbstractDBTask.SCHEDULE_SYNC_MODE);
+		mDBTaskExecutor.executeDBTask(findTask);
+		return findTask.getGetByIdResult();
 	}
 
 	@Override
 	public BrowsingObject getBrowsingObjectByPath(String path) {
-		EntityManager entityManager = mEntityManagerFactory.createEntityManager();
-		Query query = entityManager.createNamedQuery("findBrowsingObjectByPath");
-		query.setParameter("path", path);
-		BrowsingObjectEntity entity = (BrowsingObjectEntity) query.getSingleResult();
-		if(entity != null) {
-			BrowsingObject browsingObject = mBrowsingObjectBo.getBusinessObjectFromEntity(entity);
-			entityManager.detach(entity);
-			return browsingObject;
-		}
-		return null;
+		BrowsingObjectDBTaskImpl findTask = new BrowsingObjectDBTaskImpl(mBrowsingObjectBo, mEntityManagerFactory);
+		findTask.setGetByPathParam(path);
+		findTask.setScheduleMode(AbstractDBTask.SCHEDULE_SYNC_MODE);
+		mDBTaskExecutor.executeDBTask(findTask);
+		return findTask.getGetByPathResult();
 	}
 
 	@Override
 	public int getChildBrowsingObjects(BrowsingObject parent, List<BrowsingObject> children) {
-		children.clear();
-		EntityManager entityManager = mEntityManagerFactory.createEntityManager();
-		Query query = entityManager.createNamedQuery("findBrowsingObjectByParent");
-		query.setParameter("parentId", parent.getId());
-		@SuppressWarnings("unchecked")
-		List<BrowsingObjectEntity> entities = query.getResultList();
-		for(BrowsingObjectEntity entity : entities) {
-			BrowsingObject browsingObject = mBrowsingObjectBo.getBusinessObjectFromEntity(entity);
-			children.add(browsingObject);
-			entityManager.detach(entity);
-		}
-		return PersistenceResult.LOAD_SUCCESSFUL;
+		BrowsingObjectDBTaskImpl getChildrenTask = new BrowsingObjectDBTaskImpl(mBrowsingObjectBo, mEntityManagerFactory);
+		getChildrenTask.setGetChildrenParam(parent);
+		getChildrenTask.setScheduleMode(AbstractDBTask.SCHEDULE_SYNC_MODE);
+		mDBTaskExecutor.executeDBTask(getChildrenTask);
+		return getChildrenTask.getGetChildrenResult(children);
 	}
 
 	@Override
 	public int removeAllBrowsingObject() {
-		EntityManager entityManager = mEntityManagerFactory.createEntityManager();
-		EntityTransaction tx = entityManager.getTransaction();
-		try {
-			tx.begin();
-			Query query = entityManager.createNamedQuery("removeAll");
-			query.executeUpdate();
-			tx.commit();
-		}
-		catch (PersistenceException pe) {
-			pe.printStackTrace();
-			tx.rollback();
-			return PersistenceResult.REMOVE_FAILED;
-		}
-		finally {
-			entityManager.close();
-		}
-		return PersistenceResult.REMOVE_SUCCESSFUL;
+		BrowsingObjectDBTaskImpl removeAllTask = new BrowsingObjectDBTaskImpl(mBrowsingObjectBo, mEntityManagerFactory);
+		removeAllTask.setRemoveAllParam();
+		removeAllTask.setScheduleMode(AbstractDBTask.SCHEDULE_SYNC_MODE);
+		mDBTaskExecutor.executeDBTask(removeAllTask);
+		return removeAllTask.getRemoveAllResult();
+	}
+
+	@Override
+	public int persistBrowsingObjectInDirectory(String directoryPath, boolean isSyncMode) {
+		return mBrowsingServiceDelegate.persistBrowsingObjectInDirectory(directoryPath, isSyncMode ? nonblokingPrototype() : this);
+	}
+
+	@Override
+	public int removeBrowsingObjectInDirectory(String directoryPath, boolean isSyncMode) {
+		return mBrowsingServiceDelegate.removeBrowsingObjectInDirectory(directoryPath, isSyncMode ? nonblokingPrototype() : this);
+	}
+
+	@Override
+	public int removeBrowsingObjectById(long id) {
+		BrowsingObjectDBTaskImpl removeTask = new BrowsingObjectDBTaskImpl(mBrowsingObjectBo, mEntityManagerFactory);
+		removeTask.setRemoveByIdParam(id);
+		removeTask.setScheduleMode(AbstractDBTask.SCHEDULE_SYNC_MODE);
+		mDBTaskExecutor.executeDBTask(removeTask);
+		return removeTask.getRemoveByIdResult();
+	}
+	
+	private IBrowsingObjectPersistentService nonblokingPrototype() {
+		BrowsingObjectPersistentJPAImpl instance = new BrowsingObjectPersistentJPAImpl(mEntityManagerFactory);
+		instance.setBuildInfoBo(mBrowsingObjectBo);
+		instance.setDBTaskExecutor(new NoLockingDBTaskExecutorImpl());
+		return instance;
 	}
 
 }

@@ -20,7 +20,9 @@ import javax.persistence.Table;
 	@NamedQuery(name = "findBrowsingObjectByParent",
 			query = "select bo from BrowsingObjectEntity bo where bo.parent.id = :parentId"),
 	@NamedQuery(name = "removeAll",
-			query = "delete from BrowsingObjectEntity")
+			query = "delete from BrowsingObjectEntity"),
+	@NamedQuery(name = "removeById",
+			query = "delete from BrowsingObjectEntity bo where bo.id = :id"),	
 })
 
 @Table(name="browsing_object")

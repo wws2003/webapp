@@ -38,6 +38,7 @@ public class BuildInfoPersistenceServiceJPAImpl implements IBuildInfoPersistence
 	@Override
 	public int persistBuildInfo(BuildInfo buildInfo) {
 		BuildInfoDBTaskImpl persistBuildInfoTask = new BuildInfoDBTaskImpl(mBuildInfoBo, mEntityManagerFactory);
+		persistBuildInfoTask.setPersistParam(buildInfo);
 		persistBuildInfoTask.setScheduleMode(AbstractDBTask.SCHEDULE_SYNC_MODE);
 		mDBTaskExecutor.executeDBTask(persistBuildInfoTask);
 		int persistResult = persistBuildInfoTask.getPersistResult();

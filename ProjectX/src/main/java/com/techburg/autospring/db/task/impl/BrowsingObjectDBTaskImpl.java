@@ -24,6 +24,7 @@ public class BrowsingObjectDBTaskImpl extends AbstractDBTask {
 	public static final int TASK_TYPE_GET_BY_PATH = 2;
 	public static final int TASK_TYPE_GET_CHILDREN = 3;
 	public static final int TASK_TYPE_REMOVE_ALL = 4;
+	public static final int TASK_TYPE_REMOVE_BY_ID = 5;
 
 	private int mTaskType;
 
@@ -35,11 +36,13 @@ public class BrowsingObjectDBTaskImpl extends AbstractDBTask {
 	private long mParamGetById = -1;
 	private String mParamGetByPath = null;
 	private BrowsingObject mParamGetChildrenParent = null;
+	private long mParamRemoveById = -1;
 
 	//Results calculated by execute()
 	private int mResultForPersist = -1;
 	private int mResultForGetChildren = -1;
 	private int mResultForRemoveAll = -1;
+	private int mResultForRemoveById = -1;
 
 	private BrowsingObject mResultBrowsingObjectGetById = null;
 	private BrowsingObject mResultBrowsingObjectGetByPath = null;
@@ -98,10 +101,20 @@ public class BrowsingObjectDBTaskImpl extends AbstractDBTask {
 		setDBReadWriteMode(DB_WRITE_MODE);
 	}
 
-	public int getRemoveResult() {
+	public int getRemoveAllResult() {
 		return mResultForRemoveAll;
 	}
+	
+	public void setRemoveByIdParam(long id) {
+		mTaskType = TASK_TYPE_REMOVE_BY_ID;
+		setDBReadWriteMode(DB_WRITE_MODE);
+		mParamRemoveById = id;
+	}
 
+	public int getRemoveByIdResult() {
+		return mResultForRemoveById;
+	}
+	
 	@Override
 	public void execute() {
 		switch (mTaskType) {
@@ -120,6 +133,9 @@ public class BrowsingObjectDBTaskImpl extends AbstractDBTask {
 			break;
 		case TASK_TYPE_REMOVE_ALL:
 			mResultForRemoveAll = removeAllBrowsingObject();
+			break;
+		case TASK_TYPE_REMOVE_BY_ID:
+			mResultForRemoveById = removeBrowsingObjectById(mParamRemoveById);
 			break;
 		default:
 			break;
@@ -211,4 +227,24 @@ public class BrowsingObjectDBTaskImpl extends AbstractDBTask {
 		return PersistenceResult.REMOVE_SUCCESSFUL;
 	}
 
+	private int removeBrowsingObjectById(long id) {
+		EntityManager entityManager = mEntityManagerFactory.createEntityManager();
+		EntityTransaction tx = entityManager.getTransaction();
+		try {
+			tx.begin();
+			Query query = entityManager.createNamedQuery("removeById");
+			query.setParameter("id", id);
+			query.executeUpdate();
+			tx.commit();
+		}
+		catch (PersistenceException pe) {
+			pe.printStackTrace();
+			tx.rollback();
+			return PersistenceResult.REMOVE_FAILED;
+		}
+		finally {
+			entityManager.close();
+		}
+		return PersistenceResult.REMOVE_SUCCESSFUL;
+	}
 }

@@ -30,4 +30,9 @@ public class SimpleDBTaskExecutorImpl extends ConcurrencyDBTaskExecutor {
 		}
 	}
 
+	@Override
+	public void waitAllFinish() {
+		
+	}
+
 }

@@ -1,8 +1,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <html>
 <head>
-<c:if test="${empty builtInfoPage}">
-<meta http-equiv="refresh" content="5;url=<c:url value="/buildlist"></c:url>">
+<c:if test="${not empty buildingList || not empty waitingList}">
+<meta http-equiv="refresh" content="5;url=<c:url value="/buildlist/${not empty builtInfoPage ? builtInfoPage.workspaceId : 1}/"></c:url>">
 </c:if>
 <link rel="stylesheet" type="text/css" href="<c:url value='/resources/css/buildlist.css'></c:url>"></link> 
 <link rel="stylesheet" type="text/css" href="<c:url value='/resources/css/common.css'></c:url>"></link> 

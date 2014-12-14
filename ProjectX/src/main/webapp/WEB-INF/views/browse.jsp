@@ -38,14 +38,16 @@
 							</table>
 						</div>
 					</div>
-					<div>
-						<a href='<c:url value="/home"></c:url>'>To home page</a>
-					</div>
 				</c:when>
 				<c:otherwise>
 			File object can't be browsed. Open instead
 		</c:otherwise>
 			</c:choose>
+			<div class="container-footer" style="position: static;">
+				<a href='<c:url value="/workspace/detail/${builtInfoPage.workspaceId}"></c:url>'>To workspace page</a>
+		&nbsp;&nbsp;&nbsp;
+				<a href='<c:url value="/home"></c:url>'>To home page</a>
+			</div>
 		</div>
 	</div>
 </body>

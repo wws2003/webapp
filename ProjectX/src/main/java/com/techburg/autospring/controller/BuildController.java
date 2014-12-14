@@ -100,23 +100,24 @@ public class BuildController {
 		return "buildlist";
 	}
 
-	@RequestMapping(value="/testbuild/{numberOfBuildTask}", method=RequestMethod.GET) 
-	public String testBuild(@PathVariable int numberOfBuildTask, Model model) {
+	@RequestMapping(value="/testbuild/{workspaceId}/{numberOfBuildTask}", method=RequestMethod.GET) 
+	public String testBuild(@PathVariable long workspaceId, @PathVariable int numberOfBuildTask, Model model) {
 
+		String redirectURL = "redirect:/buildlist/" + workspaceId + "/";
+		
 		if(mBuildDataService == null) {
 			model.addAttribute(gServiceAvailableAttributeName, false);
-			return "buildlist";
+			return redirectURL;
 		}
 
 		for(int i = 0; i < numberOfBuildTask; i++) {
-			long id = 1; // Just set an id for test
-			Workspace workspace = getWorkspaceById(id);
+			Workspace workspace = getWorkspaceById(workspaceId);
 			IBuildTask buildTask = mBuildTaskFactory.getNewBuildTask();
 			buildTask.setWorkspace(workspace);
 			mBuildTaskProcessor.addBuildTask(buildTask);
 		}
 
-		return "redirect:/buildlist";
+		return redirectURL;
 	}
 
 	@RequestMapping(value="/build", method=RequestMethod.GET) 

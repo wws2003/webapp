@@ -83,9 +83,9 @@
 			value="${com.techburg.autospring.factory.impl.WorkspaceFactoryImpl.workspaceDefaultBuildScriptFileName}"></property>
 	</bean>
 
-	<bean name="browsingService"
+	<!-- <bean name="browsingService"
 		class="com.techburg.autospring.service.impl.BrowsingServiceImpl">
-	</bean>
+	</bean> -->
 
 	<bean name="browsingServiceDelegate"
 		class="com.techburg.autospring.service.impl.BrowsingServiceDelegateImpl">
