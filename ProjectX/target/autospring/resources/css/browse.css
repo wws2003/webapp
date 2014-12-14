@@ -1,0 +1,25 @@
+table,td,th {
+	border-collapse: collapse;
+	border: 0px solid;
+}
+
+td,th {
+	padding-left: 20px;
+	margin-left: 0px;
+	margin-right: 0px;
+	padding-right: 20px;
+}
+
+td {
+	text-align: center;
+}
+
+th {
+	text-align: left;
+}
+
+.page_line {
+	display: inline-block;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}

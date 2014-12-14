@@ -1,0 +1,103 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+
+	<context:component-scan base-package="com.techburg.autospring" />
+	<context:annotation-config />
+	<mvc:annotation-driven />
+
+	<context:property-placeholder location="classpath:locations.properties" />
+
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix">
+			<value>/WEB-INF/views/</value>
+		</property>
+		<property name="suffix">
+			<value>.jsp</value>
+		</property>
+		<property name="order" value="2"></property>
+	</bean>
+
+	<bean name="buildInfoPersistenceService"
+		class="com.techburg.autospring.service.impl.BuildInfoPersistenceServiceJPAImpl">
+	</bean>
+
+	<bean name="workspacePersistenceService"
+		class="com.techburg.autospring.service.impl.WorkspacePersistenceServiceJPAImpl">
+	</bean>
+
+	<bean name="workspaceBo" class="com.techburg.autospring.bo.impl.WorkspaceBoImpl">
+	</bean>
+
+	<bean name="buildInfoBo" class="com.techburg.autospring.bo.impl.BuildInfoBoImpl">
+	</bean>
+
+	<bean name="dBTaskLockFactory" class="com.techburg.autospring.factory.impl.DBTaskLockFactorySimpleImpl"></bean>
+	
+	<bean name="dBTaskExecutor"
+		class="com.techburg.autospring.db.task.impl.ThreadPoolDBTaskExecutorImpl">
+	</bean>
+
+	<bean name="buildDataService"
+		class="com.techburg.autospring.service.impl.BuildDataServiceImpl">
+	</bean>
+
+	<bean name="buildTaskProcessor"
+		class="com.techburg.autospring.task.impl.BuildTaskProcessorSemaphoreImpl">
+	</bean>
+
+	<bean name="waitingBuildTaskQueue"
+		class="com.techburg.autospring.task.impl.BuildTaskQueueDeImpl">
+	</bean>
+
+	<bean name="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceUnitName" value="defaultManager" />
+	</bean>
+
+	<bean name="buildTaskFactory"
+		class="com.techburg.autospring.factory.impl.UnixScriptBuildTaskFactoryImpl">
+		<property name="logFileLocation"
+			value="${com.techburg.autospring.factory.impl.UnixScriptBuildTaskFactoryImpl.logFileLocation}"></property>
+		<property name="defaultScriptFileLocation"
+			value="${com.techburg.autospring.factory.impl.UnixScriptBuildTaskFactoryImpl.defaultScriptFileLocation}"></property>
+		<property name="defaultScriptFileName"
+			value="${com.techburg.autospring.factory.impl.UnixScriptBuildTaskFactoryImpl.defaultScriptFileName}"></property>
+	</bean>
+
+	<bean name="workspaceFactory"
+		class="com.techburg.autospring.factory.impl.WorkspaceFactoryImpl">
+		<property name="workspaceDefaultDirectoryPath"
+			value="${com.techburg.autospring.factory.impl.WorkspaceFactoryImpl.workspaceDefaultDirectoryPath}"></property>
+		<property name="workspaceDefaultBuildScriptFileName"
+			value="${com.techburg.autospring.factory.impl.WorkspaceFactoryImpl.workspaceDefaultBuildScriptFileName}"></property>
+	</bean>
+
+	<!-- <bean name="browsingService"
+		class="com.techburg.autospring.service.impl.BrowsingServiceImpl">
+	</bean> -->
+
+	<bean name="browsingServiceDelegate"
+		class="com.techburg.autospring.service.impl.BrowsingServiceDelegateImpl">
+		<property name="browsingRootPath"
+			value="${com.techburg.autospring.service.impl.BrowsingServiceDelegateImpl.browsingRootPath}"></property>
+	</bean>
+
+	<bean name="browsingObjectPersistentService"
+		class="com.techburg.autospring.service.impl.BrowsingObjectPersistentJPAImpl">
+	</bean>
+
+	<bean name="browsingObjectBo" class="com.techburg.autospring.bo.impl.BrowsingObjectBoImpl">
+	</bean>
+
+</beans>
