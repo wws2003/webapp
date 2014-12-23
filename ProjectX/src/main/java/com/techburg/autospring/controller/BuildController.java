@@ -131,16 +131,15 @@ public class BuildController {
 		return "build";
 	}
 
-	@RequestMapping(value="/build", method=RequestMethod.POST) 
-	public String buildTask(Model model) {
+	@RequestMapping(value="/build/{workspaceId}", method=RequestMethod.POST) 
+	public String buildTask(Model model, @PathVariable long workspaceId) {
 		if(mBuildDataService == null) {
 			model.addAttribute(gServiceAvailableAttributeName, false);
 			return "buildlist";
 		}
 
 		IBuildTask buildTask = mBuildTaskFactory.getNewBuildTask();
-		long id = 1; //TODO In the future, read id from request params or something...
-		Workspace workspace = getWorkspaceById(id);
+		Workspace workspace = getWorkspaceById(workspaceId);
 		buildTask.setWorkspace(workspace);
 		mBuildTaskProcessor.addBuildTask(buildTask);
 

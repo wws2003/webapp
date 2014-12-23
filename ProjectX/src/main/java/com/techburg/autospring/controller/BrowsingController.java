@@ -1,7 +1,15 @@
 package com.techburg.autospring.controller;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -75,7 +83,7 @@ public class BrowsingController {
 		if(mBrowsingPersistentService == null) {
 			return waitPage;
 		}
-		
+
 		try {
 			BrowsingObject browsingObject = mBrowsingPersistentService.getBrowsingObjectById(id);
 			if(browsingObject != null && browsingObject.getOpenType() == OpenType.OPEN_BY_BROWSER) {
@@ -85,7 +93,7 @@ public class BrowsingController {
 				model.addAttribute(gObjectCanOpened, true);
 			}
 			else {
-				model.addAttribute(gObjectCanOpened, false);
+				return "redirect:/download/" + id;
 			}
 		}
 		catch (Exception e) {
@@ -94,4 +102,39 @@ public class BrowsingController {
 
 		return openPage;
 	}
+
+	@RequestMapping(value="/download/{id}", method = RequestMethod.GET)
+	public void getFile(@PathVariable long id, HttpServletResponse response) {
+		BrowsingObject browsingObject = mBrowsingPersistentService.getBrowsingObjectById(id);
+		if(browsingObject != null) {
+			
+			response.setContentType("application/octet-stream");
+			response.setHeader("Content-Disposition","attachment;filename=" + new File(browsingObject.getAbsolutePath()).getName());
+			 
+			ServletOutputStream out = null;
+			InputStream fileInputStream = null;
+			try {
+				out = response.getOutputStream();
+				fileInputStream = new BufferedInputStream(new FileInputStream(browsingObject.getAbsolutePath()));
+				byte[] outputByte = new byte[4096];
+				while(fileInputStream.read(outputByte, 0, 4096) != -1)
+				{
+					out.write(outputByte, 0, 4096);
+				}
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			finally {
+				try {
+					fileInputStream.close();
+					out.flush();
+					out.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
 }

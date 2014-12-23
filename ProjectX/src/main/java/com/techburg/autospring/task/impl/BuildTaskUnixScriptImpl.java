@@ -1,11 +1,8 @@
 package com.techburg.autospring.task.impl;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,14 +35,13 @@ public class BuildTaskUnixScriptImpl extends AbstractBuildTask {
 	}
 
 	@Override
-	protected int mainExecute() {
+	protected int mainExecute(StringBuilder outputBuilder) {
 		List<String> commandsAndArguments = new ArrayList<String>();
 		String scriptFilePath = (mWorkspace != null) ? mWorkspace.getScriptFilePath() : mDefaultScriptFileLocation + File.separator + mDefaultScriptFileName;
 		commandsAndArguments.add(gCommand);
 		commandsAndArguments.add(scriptFilePath);
 		ProcessBuilder processBuilder = new ProcessBuilder(commandsAndArguments);
 
-		StringBuilder outputBuilder = new StringBuilder();
 		int result = BuildTaskResult.SUCCESSFUL;
 		try {
 			result = startProcessAndGetOutputString(processBuilder, outputBuilder);
@@ -54,15 +50,8 @@ public class BuildTaskUnixScriptImpl extends AbstractBuildTask {
 			e.printStackTrace();
 			return BuildTaskResult.FAILED;
 		}
-
-		try {
-			writeOutputToLogFile(outputBuilder.toString());
-			return result;
-		} 
-		catch (Exception e) {
-			e.printStackTrace();
-			return BuildTaskResult.FAILED;
-		}
+		
+		return result;
 	}
 
 	private int startProcessAndGetOutputString(ProcessBuilder processBuilder, StringBuilder outputBuilder) throws Exception {
@@ -90,19 +79,4 @@ public class BuildTaskUnixScriptImpl extends AbstractBuildTask {
 		}
 	}
 
-	private void writeOutputToLogFile(String output) throws Exception {
-		FileUtil fileUtil = new FileUtil();
-		OutputStream logFileOutputStream = null;
-		try {
-			logFileOutputStream = new BufferedOutputStream(new FileOutputStream(getLogFileFullPath()));
-			fileUtil.writeStringToOutputStream(output, logFileOutputStream);
-			logFileOutputStream.close();
-		} 
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		finally {
-			logFileOutputStream.close();
-		}
-	}
 }

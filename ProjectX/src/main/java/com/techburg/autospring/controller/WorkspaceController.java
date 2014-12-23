@@ -25,11 +25,10 @@ import com.techburg.autospring.util.FileUtil;
 public class WorkspaceController {
 	private static final String gWorkspaceListAttributeName = "workspaces";
 	private static final String gWorkspaceIdAttributeName = "workspaceId";
+	private static final String gEdittingWorkspaceAttributeName = "edittingWorkspace";
+	private static final String gWorkspaceDescriptionAttributeName = "workspaceDescription";
 	private static final String gWorkspaceRootBrowsingObjectIdAttributeName = "workspaceRootBrowsingObjectId";
-	
-	private static final String gScriptFileAvailable = "scriptFileAvailable";
-	private static final String gScriptFileContent = "scriptFileContent";
-	private static final String gScriptFileContentUpdated = "scriptFileContentUpdated";
+	private static final String gWorkspaceScriptContentAttributeName = "scriptContent";
 	private static final String gRedirectPageAttributeName = "redirectPage";
 	
 	private IWorkspacePersistenceService mWorkspacePersistenceService;
@@ -56,19 +55,52 @@ public class WorkspaceController {
 		return "workspace";
 	}
 	
+	@RequestMapping(value="/workspace/edit/{workspaceId}", method=RequestMethod.GET)
+	public String editWorkspace(Model model, @PathVariable long workspaceId) {
+		Workspace edittingWorkspace = getWorkspacebyId(workspaceId);
+		if(edittingWorkspace == null) {
+			return "error";
+		}
+		model.addAttribute(gEdittingWorkspaceAttributeName, edittingWorkspace);
+		model.addAttribute(gWorkspaceScriptContentAttributeName, getWorkspaceScriptContent(edittingWorkspace));
+		return "workspace";
+	}
+	
 	@RequestMapping(value="/workspace/new", method=RequestMethod.POST)
 	public String newWorkspace(Model model,
 			@RequestParam(value = "workspacename", required = true) String workspaceName,
+			@RequestParam(value = "workspacedescription", required = true) String workspaceDescription,
 			@RequestParam(value = "buildscriptname", required = true) String buildScriptName,
 			@RequestParam(value = "buildscriptcontent", required = true) String buildScriptContent) {
 		
 		Workspace newWorkspace = null;
 		newWorkspace = mWorkspaceFactory.createWorkspace(workspaceName, buildScriptName);
+		newWorkspace.setDescription(workspaceDescription);
 		try {
 			saveWorkspaceBuildScriptContent(newWorkspace, buildScriptContent);
 			if(mWorkspacePersistenceService.persistWorkspace(newWorkspace) == PersistenceResult.REQUEST_QUEUED) {	
 				model.addAttribute(gRedirectPageAttributeName, "/workspace/list");
 				return "inform";
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return "error";
+		}
+		return "error";
+	}
+	
+	@RequestMapping(value="/workspace/update/{workspaceId}", method=RequestMethod.POST)
+	public String updateWorkspace(@PathVariable long workspaceId,
+			@RequestParam(value = "workspacedescription", required = true) String workspaceDescription,
+			@RequestParam(value = "buildscriptcontent", required = true) String buildScriptContent) {
+		
+		Workspace edittingWorkspace = getWorkspacebyId(workspaceId);
+		edittingWorkspace.setDescription(workspaceDescription);
+		try {
+			saveWorkspaceBuildScriptContent(edittingWorkspace, buildScriptContent);
+			if(mWorkspacePersistenceService.updateWorkspace(edittingWorkspace) == PersistenceResult.UPDATE_SUCCESSFUL) {	
+				return "redirect:/workspace/detail/" + workspaceId;
 			}
 		}
 		catch (Exception e) {
@@ -94,61 +126,12 @@ public class WorkspaceController {
 		if(workspace != null) {
 			BrowsingObject workspaceRootBrowsingObject = mBrowsingObjectPersistentService.getBrowsingObjectByPath(workspace.getDirectoryPath());
 			model.addAttribute(gWorkspaceRootBrowsingObjectIdAttributeName, workspaceRootBrowsingObject.getId());
+			model.addAttribute(gWorkspaceDescriptionAttributeName, workspace.getDescription());
 		}
 		model.addAttribute(gWorkspaceIdAttributeName, workspaceId);
 		return "workspacedetail";
 	}
-
-	@RequestMapping(value="/script/edit", method=RequestMethod.GET)
-	public String editScriptContent(
-			@RequestParam(value = gScriptFileContentUpdated, required = false) boolean scriptFileContentUpdated,
-			Model model) {
-
-		//Detect if redirected from successful edit submission
-		model.addAttribute(gScriptFileContentUpdated, scriptFileContentUpdated);
-
-		long id = 1; //TODO In the future, id will be read from proper parameters
-		Workspace workspace = getWorkspacebyId(id);
-
-		if(workspace != null) {
-			String scriptFilePath = workspace.getScriptFilePath();
-			FileUtil fileUtil = new FileUtil();
-			try {
-				String scriptFileContent = fileUtil.getStringFromFile(scriptFilePath);
-				System.out.println("File content " + scriptFileContent);
-				model.addAttribute(gScriptFileContent, scriptFileContent);
-				model.addAttribute(gScriptFileAvailable, true);
-			}
-			catch (Exception e) {
-				model.addAttribute(gScriptFileAvailable, false);
-			}
-		}
-		else  {
-			model.addAttribute(gScriptFileAvailable, false);
-		}
-		return "script";
-	}
-
-	@RequestMapping(value="/script/submit", method=RequestMethod.POST)
-	public String submitScriptContent(
-			@RequestParam(value = "content", required = true) String content,
-			Model model) {
-		//TODO Avoid concurrency when read/write file
-		long id = 1; //TODO In the future, id will be read from proper parameters
-		Workspace workspace = getWorkspacebyId(id);
-
-		if(workspace != null) {
-			try {
-				saveWorkspaceBuildScriptContent(workspace, content);
-			}
-			catch (Exception e) {
-				return "home";
-			}
-			model.addAttribute(gScriptFileContentUpdated, true);
-		}
-		return "redirect:/script/edit";
-	}
-
+	
 	private Workspace getWorkspacebyId(long id) {
 		List<Workspace> workspaces = new ArrayList<Workspace>();
 		if(mWorkspacePersistenceService != null) {
@@ -169,5 +152,15 @@ public class WorkspaceController {
 
 		FileUtil fileUtil = new FileUtil();
 		fileUtil.storeContentToFile(content, scriptFilePath);
+	}
+	
+	private String getWorkspaceScriptContent(Workspace workspace) {
+		FileUtil fileUtil = new FileUtil();
+		try {
+			return fileUtil.getStringFromFile(workspace.getScriptFilePath());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "";
+		}
 	}
 }

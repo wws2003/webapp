@@ -19,6 +19,9 @@ public class WorkspaceEntity {
 	@Column(name="directory_path")
 	private String mDirectoryPath;
 	
+	@Column(name="description")
+	private String mDescription;
+	
 	public long getId() {
 		return id;
 	}
@@ -38,5 +41,12 @@ public class WorkspaceEntity {
 	}
 	public void setDirectoryPath(String directoryPath) {
 		this.mDirectoryPath = directoryPath;
+	}
+	
+	public String getDescription() {
+		return mDescription;
+	}
+	public void setDescription(String description) {
+		this.mDescription = description;
 	}
 }

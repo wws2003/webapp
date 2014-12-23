@@ -40,7 +40,7 @@ public class WorkspaceDBTaskImpl extends AbstractDBTask {
 	private int mResultForRemove = -1;
 	private int mResultForUpdate = -1;
 	private List<Workspace> mResultWorkspaceListLoad = new ArrayList<Workspace>();
-	
+
 	private IWorkspaceBo mWorkspaceBo = null;
 	private EntityManagerFactory mEntityManagerFactory;
 
@@ -55,45 +55,45 @@ public class WorkspaceDBTaskImpl extends AbstractDBTask {
 		mTaskType = TASK_TYPE_PERSIST;
 		setDBReadWriteMode(DB_WRITE_MODE);
 	}
-	
+
 	public int getPersistResult() {
 		return mResultForPersist;
 	}
-	
+
 	public void setUpdateParams(Workspace workspaceToUpdate, IBrowsingObjectPersistentService browsingObjectPersistentService) {
 		mParamWorkspaceToUpdate = workspaceToUpdate;
 		mParamBrowsingObjectPersistentService = browsingObjectPersistentService;
 		mTaskType = TASK_TYPE_UPDATE;
 		setDBReadWriteMode(DB_WRITE_MODE);
 	}
-	
+
 	public long getWorkspaceUpdateResult() {
 		return mResultForUpdate;
 	}
-	
+
 	public void setLoadParam(WorkspacePersistenceQuery paramWorkspaceLoadQuery) {
 		mParamWorkspaceLoadQuery = paramWorkspaceLoadQuery;
 		mTaskType = TASK_TYPE_LOAD;
 		setDBReadWriteMode(DB_READ_MODE);
 	}
-	
+
 	public int getLoadResult(List<Workspace> resultWorkspaceListLoad) {
 		resultWorkspaceListLoad.clear();
 		resultWorkspaceListLoad.addAll(mResultWorkspaceListLoad);
 		mResultWorkspaceListLoad.clear();
 		return mResultForLoad;
 	}
-	
+
 	public void setRemoveParam(long removeId) {
 		mParamIdForRemove = removeId;
 		mTaskType = TASK_TYPE_REMOVE_BY_ID;
 		setDBReadWriteMode(DB_WRITE_MODE);
 	}
-	
+
 	public int getRemoveResult() {
 		return mResultForRemove;
 	}
-	
+
 	@Override
 	public void execute() {
 		switch (mTaskType) {
@@ -118,16 +118,16 @@ public class WorkspaceDBTaskImpl extends AbstractDBTask {
 	private int persistWorkspace(Workspace workspace) {
 		WorkspaceEntity entity = mWorkspaceBo.getEntityFromBusinessObject(workspace);
 		EntityManager entityManager = mEntityManagerFactory.createEntityManager();
-		EntityTransaction ts = entityManager.getTransaction();
+		EntityTransaction tx = entityManager.getTransaction();
+		tx.begin();
 		try {
-			ts.begin();
 			entityManager.persist(entity);
 			entityManager.detach(entity); //Do not need to manage this object longer !
-			ts.commit();
+			tx.commit();
 		}
 		catch (PersistenceException pe) {
 			pe.printStackTrace();
-			ts.rollback();
+			tx.rollback();
 			return PersistenceResult.PERSISTENCE_FAILED;
 		}
 		finally {
@@ -144,12 +144,20 @@ public class WorkspaceDBTaskImpl extends AbstractDBTask {
 		}
 		EntityTransaction tx = entityManager.getTransaction();
 		tx.begin();
-		entity.setScriptFilePath(workspace.getScriptFilePath());
-		tx.commit();
-		entityManager.close();
-		int removeResult = mParamBrowsingObjectPersistentService.removeBrowsingObjectInDirectory(workspace.getDirectoryPath(), true);
-		int persistResult = mParamBrowsingObjectPersistentService.persistBrowsingObjectInDirectory(workspace.getDirectoryPath(), true);
-		return (removeResult == PersistenceResult.REMOVE_SUCCESSFUL && persistResult == PersistenceResult.PERSISTENCE_SUCCESSFUL) ? PersistenceResult.UPDATE_SUCCESSFUL : PersistenceResult.UPDATE_FAILED ;
+		try {
+			entity.setDescription(workspace.getDescription());
+			tx.commit();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			tx.rollback();
+			return PersistenceResult.UPDATE_FAILED;
+		}
+		finally {
+			entityManager.close();
+		}
+		
+		return PersistenceResult.UPDATE_SUCCESSFUL;
 	}
 
 	private int loadWorkspace(List<Workspace> buildInfoList, WorkspacePersistenceQuery query) {

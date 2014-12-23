@@ -17,13 +17,13 @@
 						<div>Workspace id: ${element.id}</div>
 						<div>Workspace directory: ${element.directoryPath}</div>
 						<div>Workspace build script path:${element.scriptFilePath} </div>
-						<div><a href="<c:url value="/workspace/detail/${element.id}"></c:url>">Workspace details</a></div>
-						<div><a href="#">Workspace edit</a></div>
+						<div><a href='<c:url value="/workspace/detail/${element.id}"></c:url>'>Workspace details</a></div>
+						<div><a href='<c:url value="/workspace/edit/${element.id}"></c:url>'>Workspace edit</a></div>
 					</div>
 				</c:forEach>
-		</div>
-		<div class="container-footer">
-			<a href='<c:url value="/home"></c:url>'>To home page</a>
+				<div class="container-footer" style="position: static;">
+					<a href='<c:url value="/home"></c:url>'>To home page</a>
+				</div>
 		</div>
 	</div>
 </body>

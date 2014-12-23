@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <html>
 <head>
-<meta http-equiv="refresh" content="2;url=<c:url value="/buildlist"></c:url>">
+<meta http-equiv="refresh" content="2;url=<c:url value="/workspace/list"></c:url>">
 <style type="text/css">
 .ct-div {
 	padding-left: 5%;

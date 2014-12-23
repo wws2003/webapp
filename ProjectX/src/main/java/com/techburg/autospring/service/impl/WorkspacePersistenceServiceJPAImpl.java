@@ -58,17 +58,18 @@ public class WorkspacePersistenceServiceJPAImpl implements IWorkspacePersistence
 	}
 
 	@Override
-	public int updateWorkspace(Workspace workspace) {
-		WorkspaceDBTaskImpl workspacePersistTask = new WorkspaceDBTaskImpl(mWorkspaceBo, mEntityManagerFactory);
+	public int updateWorkspace(Workspace workspaceToUpdate) {
+		WorkspaceDBTaskImpl workspaceUpdateTask = new WorkspaceDBTaskImpl(mWorkspaceBo, mEntityManagerFactory);
 		try {
-			workspacePersistTask.setPersistParams(workspace, mBrowsingObjectPersistentService);
-			workspacePersistTask.setScheduleMode(AbstractDBTask.SCHEDULE_SYNC_MODE);
-			mDBTaskExecutor.executeDBTask(workspacePersistTask);
+			workspaceUpdateTask.setUpdateParams(workspaceToUpdate, mBrowsingObjectPersistentService);
+			workspaceUpdateTask.setScheduleMode(AbstractDBTask.SCHEDULE_SYNC_MODE);
+			mDBTaskExecutor.executeDBTask(workspaceUpdateTask);
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			return PersistenceResult.PERSISTENCE_FAILED;
 		}
-		return PersistenceResult.REQUEST_QUEUED;
+		return PersistenceResult.UPDATE_SUCCESSFUL;
 	}
 
 	@Override

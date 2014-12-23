@@ -36,6 +36,10 @@
 		<div class="sidebar"></div>
 		<div class="container_header">Simplest CI !</div>
 		<div class="main_content">
+			<div>
+				<h3><b>Workspace description</b></h3>
+				<p>${workspaceDescription}</p>
+			</div>
 			<div class="round-buttons-div">
 				<div class="round-buttons-line">
 					<div class="round-button">
@@ -53,6 +57,8 @@
 				</div>
 			</div>
 			<div class="container-footer">
+				<a href='<c:url value="/workspace/list"></c:url>'>To workspace list</a>
+		&nbsp;&nbsp;&nbsp;
 				<a href='<c:url value="/home"></c:url>'>To home page</a>
 			</div>
 		</div>

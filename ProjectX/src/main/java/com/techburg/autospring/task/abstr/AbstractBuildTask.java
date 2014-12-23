@@ -1,33 +1,28 @@
 package com.techburg.autospring.task.abstr;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.Date;
 
 import com.techburg.autospring.model.business.BuildInfo;
-import com.techburg.autospring.service.abstr.IBuildInfoPersistenceService;
+import com.techburg.autospring.util.FileUtil;
 
 public abstract class AbstractBuildTask implements IBuildTask{
 	protected long mId;
 	private int mStatus;
 	private Date mBeginBuildTime;
 	private Date mEndBuildTime;
-	
 	private String mLogFileNamePrefix;
 	private String mLogFileNameExtension;
 	
 	private static final String G_UNKNOWN_LOG_FILE_NAME = "---";
 	private static final String LOG_DIR_NAME = "Logs";
 	
-	protected IBuildInfoPersistenceService mPersistenceService;
-	
 	public AbstractBuildTask(String logFilePathPrefix, String logFileNameExtension, String logFileLocation) {
 		mLogFileNamePrefix = logFilePathPrefix;
 		mLogFileNameExtension  = logFileNameExtension;
-		//mLogFileLocation = logFileLocation;
-	}
-
-	public void setBuildInfoPersistenceService(IBuildInfoPersistenceService persistenceService) {
-		mPersistenceService = persistenceService;
 	}
 
 	@Override
@@ -51,7 +46,9 @@ public abstract class AbstractBuildTask implements IBuildTask{
 			return BuildTaskResult.CANCELLED;
 		}
 		mBeginBuildTime = new Date();
-		int ret = mainExecute();
+		StringBuilder buildOutput = new StringBuilder();
+		int ret = mainExecute(buildOutput);
+		postExecuted(buildOutput.toString());
 		mEndBuildTime = new Date();
 		mStatus = ret;
 		return ret;
@@ -68,14 +65,9 @@ public abstract class AbstractBuildTask implements IBuildTask{
 		}
 		String logFilePath = (mBeginBuildTime != null) ? getLogFileFullPath() : G_UNKNOWN_LOG_FILE_NAME;
 		buildInfo.setLogFilePath(logFilePath);
-		
-		if(toPersist && mPersistenceService != null) {
-			System.out.println("--------------------------Trying to persist new build info---------------------");
-			mPersistenceService.persistBuildInfo(buildInfo);
-		}
 	}
 
-	protected String getLogFileFullPath() {
+	private String getLogFileFullPath() {
 		StringBuilder logFileNameBuilder = new StringBuilder();
 		logFileNameBuilder.append(getWorkspace().getDirectoryPath())
 						.append(File.separator)
@@ -90,5 +82,39 @@ public abstract class AbstractBuildTask implements IBuildTask{
 		return logFileNameBuilder.toString();
 	}
 	
-	protected abstract int mainExecute();
+	private void postExecuted(String buildResult) {
+		StringBuilder logFolderNameBuilder = new StringBuilder();
+		logFolderNameBuilder.append(getWorkspace().getDirectoryPath())
+						.append(File.separator)
+						.append(LOG_DIR_NAME);
+		
+		File logFolder = new File(logFolderNameBuilder.toString());
+		if(!logFolder.exists()) {
+			logFolder.mkdir();
+		}
+		
+		try {
+			writeOutputToLogFile(buildResult);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void writeOutputToLogFile(String output) throws Exception {
+		FileUtil fileUtil = new FileUtil();
+		OutputStream logFileOutputStream = null;
+		try {
+			logFileOutputStream = new BufferedOutputStream(new FileOutputStream(getLogFileFullPath()));
+			fileUtil.writeStringToOutputStream(output, logFileOutputStream);
+			logFileOutputStream.close();
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			logFileOutputStream.close();
+		}
+	}
+	
+	protected abstract int mainExecute(StringBuilder buildOutput);
 }

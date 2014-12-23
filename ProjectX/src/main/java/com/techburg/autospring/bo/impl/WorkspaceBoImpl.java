@@ -14,6 +14,7 @@ public class WorkspaceBoImpl implements IWorkspaceBo {
 		entity.setId(workspace.getId());
 		entity.setScriptFilePath(workspace.getScriptFilePath());
 		entity.setDirectoryPath(workspace.getDirectoryPath());
+		entity.setDescription(workspace.getDescription());
 		return entity;
 	}
 	
@@ -26,6 +27,7 @@ public class WorkspaceBoImpl implements IWorkspaceBo {
 		workspace.setId(entity.getId());
 		workspace.setScriptFilePath(entity.getScriptFilePath());
 		workspace.setDirectoryPath(entity.getDirectoryPath());
+		workspace.setDescription(entity.getDescription());
 		return workspace;
 	}
 }

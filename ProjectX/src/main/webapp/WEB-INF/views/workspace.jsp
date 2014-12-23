@@ -14,12 +14,30 @@ input, textarea  {
 		<div class="sidebar"></div>
 		<div class="container_header">Simplest CI !</div>
 		<div class="main_content">
-			<form action=<c:url value="/workspace/new"></c:url> method="POST">
-				Workspace name: <input name="workspacename" type="text"><br>
-				Build script name: <input name="buildscriptname" type="text"><br>
+			<form 
+				<c:choose> 
+				<c:when test="${empty edittingWorkspace}">
+					action=<c:url value="/workspace/new"></c:url>
+				</c:when>
+				<c:otherwise>
+					action=<c:url value="/workspace/update/${edittingWorkspace.id}"></c:url>
+				</c:otherwise>
+				</c:choose>
+			method="POST">
+				<c:if test="${empty edittingWorkspace}">
+					Workspace name: <input name="workspacename" type="text"><br>
+				</c:if>
+				
+				<c:if test="${empty edittingWorkspace}">
+					Build script name: <input name="buildscriptname" type="text"><br>
+				</c:if>
+				
+				Workspace description: <br>
+				<textarea rows="4" cols="80" name="workspacedescription"><c:out value="${not empty edittingWorkspace ? edittingWorkspace.description : ''}"></c:out></textarea><br>
+				
 				Script content: <br>
-				<textarea rows="25" cols="80" name="buildscriptcontent">
-				</textarea>
+				<textarea rows="25" cols="80" name="buildscriptcontent"><c:out value="${not empty edittingWorkspace ? scriptContent : ''}"></c:out></textarea>
+					
 				<br> <input type="submit" value="Submit"> <br>
 			</form>
 		</div>

@@ -163,7 +163,7 @@ public class BuildTaskProcessorSemaphoreImpl implements IBuildTaskProcessor, Dis
 					mWaitingTaskQueue.setBuildingTask(nextBuildTask);
 					nextBuildTask.execute();
 					BuildInfo buildInfo = new BuildInfo();
-					nextBuildTask.storeToBuildInfo(buildInfo, false);
+					nextBuildTask.storeToBuildInfo(buildInfo, true);
 					mWaitingTaskQueue.setBuildingTask(null);
 					mBuildInfoPersistenceService.persistBuildInfo(buildInfo);
 					recontructBrowsingStructure(nextBuildTask.getWorkspace());

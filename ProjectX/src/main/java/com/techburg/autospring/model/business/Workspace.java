@@ -4,6 +4,7 @@ public class Workspace {
 	private long mId;
 	private String mScriptFilePath;
 	private String mDirectoryPath;
+	private String mDescription;
 	
 	public long getId() {
 		return mId;
@@ -24,6 +25,13 @@ public class Workspace {
 	}
 	public void setDirectoryPath(String directoryPath) {
 		this.mDirectoryPath = directoryPath;
+	}
+	
+	public String getDescription() {
+		return mDescription;
+	}
+	public void setDescription(String description) {
+		this.mDescription = description;
 	}
 
 }

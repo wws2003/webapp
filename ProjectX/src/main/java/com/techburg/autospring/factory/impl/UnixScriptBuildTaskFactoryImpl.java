@@ -4,14 +4,13 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.techburg.autospring.factory.abstr.IBuildTaskFactory;
-import com.techburg.autospring.service.abstr.IBuildInfoPersistenceService;
 import com.techburg.autospring.service.abstr.IWorkspacePersistenceService;
 import com.techburg.autospring.task.abstr.IBuildTask;
 import com.techburg.autospring.task.impl.BuildTaskUnixScriptImpl;
 
 public class UnixScriptBuildTaskFactoryImpl implements IBuildTaskFactory, InitializingBean {
 
-	private IBuildInfoPersistenceService mPersistenceService;
+	//private IBuildInfoPersistenceService mPersistenceService;
 	//private IWorkspacePersistenceService mWorkspacePersistenceService;
 	
 	private static final String gLogFilePathPrefix = "log";
@@ -20,11 +19,6 @@ public class UnixScriptBuildTaskFactoryImpl implements IBuildTaskFactory, Initia
 	private String mLogFileLocation;
 	private String mDefaultScriptFileLocation;
 	private String mDefaultScriptFileName;
-
-	@Autowired
-	public void setBuildInfoPersistenceService(IBuildInfoPersistenceService persistenceService) {
-		mPersistenceService = persistenceService;
-	}
 	
 	@Autowired
 	public void setWorkspacePersistenceService(IWorkspacePersistenceService workspacePersistenceService) {
@@ -46,7 +40,6 @@ public class UnixScriptBuildTaskFactoryImpl implements IBuildTaskFactory, Initia
 	@Override
 	public IBuildTask getNewBuildTask() {
 		BuildTaskUnixScriptImpl buildTask = new BuildTaskUnixScriptImpl(gLogFilePathPrefix, gLogFileExtension, mLogFileLocation, mDefaultScriptFileLocation, mDefaultScriptFileName);
-		buildTask.setBuildInfoPersistenceService(mPersistenceService);
 		return buildTask;
 	}
 

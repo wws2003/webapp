@@ -2,7 +2,6 @@ package com.techburg.autospring.db.task.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -115,8 +114,8 @@ public class BuildInfoDBTaskImpl extends AbstractDBTask {
 		BuildInfoEntity entity = mBuildInfoBo.getEntityFromBusinessObject(buildInfo);
 		EntityManager entityManager = mEntityManagerFactory.createEntityManager();
 		EntityTransaction tx = entityManager.getTransaction();
+		tx.begin();
 		try {
-			tx.begin();
 			entityManager.persist(entity);
 			entityManager.detach(entity); //Do not need to manage this object longer !
 			tx.commit();
@@ -165,7 +164,7 @@ public class BuildInfoDBTaskImpl extends AbstractDBTask {
 		case BuildInfoDataRange.PAGE_MATCH:
 			int page = query.page;
 			int nbPage = query.nbInstancePerPage;
-			
+
 			queryStringBuilder.append("select * from ")
 			.append("(")
 			.append("select * from build_info ")
@@ -174,17 +173,24 @@ public class BuildInfoDBTaskImpl extends AbstractDBTask {
 			.append(" order by id desc ")
 			.append("limit ")
 			.append(page * nbPage)
-			.append(") ")
-			.append("order by id asc ")
-			.append("limit ")
-			.append(nbPage);
+			.append(") ");
+
+			if(page > 1) {
+				queryStringBuilder.append("where id < ")
+				.append("(")
+				.append("select min(id) from (select id from build_info")
+				.append(" where workspace_id = ")						
+				.append(query.workspace)
+				.append(" order by id desc limit ") 
+				.append((page - 1) * nbPage)
+				.append("))");
+			}
 
 			loadQuery = entityManager.createNativeQuery(queryStringBuilder.toString(), BuildInfoEntity.class);
 			try {
 				@SuppressWarnings("unchecked")
 				List<BuildInfoEntity> entities = loadQuery.getResultList();
-				for(ListIterator<BuildInfoEntity> bIter = entities.listIterator(entities.size()); bIter.hasPrevious(); ) {
-					BuildInfoEntity entity = bIter.previous();
+				for (BuildInfoEntity entity : entities) {
 					entityManager.detach(entity);
 					buildInfoList.add(mBuildInfoBo.getBusinessObjectFromEntity(entity));
 				}
@@ -226,7 +232,7 @@ public class BuildInfoDBTaskImpl extends AbstractDBTask {
 				e.printStackTrace();
 				return PersistenceResult.INVALID_QUERY;
 			}
-			
+
 		case BuildInfoDataRange.ID_MATCH:
 			long id = query.id;
 			BuildInfoEntity entity = entityManager.find(BuildInfoEntity.class, id);
@@ -242,16 +248,25 @@ public class BuildInfoDBTaskImpl extends AbstractDBTask {
 
 	private int removeBuildInfoByID(long id) {
 		EntityManager entityManager = mEntityManagerFactory.createEntityManager();
-		EntityTransaction transition = entityManager.getTransaction();
+		EntityTransaction tx = entityManager.getTransaction();
 		int ret = PersistenceResult.REMOVE_FAILED;
-		transition.begin();
-		BuildInfoEntity entityToDelete = entityManager.find(BuildInfoEntity.class, id);
-		if(entityToDelete != null) {
-			entityManager.remove(entityToDelete);
-			ret = PersistenceResult.REMOVE_SUCCESSFUL;
+		tx.begin();
+		try {
+			BuildInfoEntity entityToDelete = entityManager.find(BuildInfoEntity.class, id);
+			if(entityToDelete != null) {
+				entityManager.remove(entityToDelete);
+				ret = PersistenceResult.REMOVE_SUCCESSFUL;
+			}
+			tx.commit();
 		}
-		transition.commit();
-		entityManager.close();
+		catch (Exception e) {
+			e.printStackTrace();
+			tx.rollback();
+			ret = PersistenceResult.REMOVE_FAILED;
+		}
+		finally {
+			entityManager.close();
+		}
 		return ret;
 	}
 

@@ -44,7 +44,7 @@
 		</c:otherwise>
 			</c:choose>
 			<div class="container-footer" style="position: static;">
-				<a href='<c:url value="/workspace/detail/${builtInfoPage.workspaceId}"></c:url>'>To workspace page</a>
+				<a href='<c:url value="/workspace/list"></c:url>'>To workspace list</a>
 		&nbsp;&nbsp;&nbsp;
 				<a href='<c:url value="/home"></c:url>'>To home page</a>
 			</div>
