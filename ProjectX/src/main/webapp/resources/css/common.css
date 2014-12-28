@@ -42,3 +42,7 @@ body {
    height: 10%;
    background-color: transparent;
 }
+
+input.long-text {
+	width: 50%;
+}

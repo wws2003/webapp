@@ -12,6 +12,7 @@
 	width:40%;
 	display: inline-block;
 	margin:0 15px 0 15px;
+	vertical-align: top;
 }
 
 .round-button-circle {

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.techburg.autospring.factory.abstr.IWorkspaceFactory;
 import com.techburg.autospring.model.BasePersistenceQuery.DataRange;
@@ -53,6 +54,29 @@ public class WorkspaceController {
 	@RequestMapping(value="/workspace/new", method=RequestMethod.GET)
 	public String toNewWorkspacePage() {
 		return "workspace";
+	}
+	
+	@RequestMapping(value="/workspace/github/new", method=RequestMethod.GET)
+	public String toNewGithubWorkspacePage() {
+		return "workspace_github";
+	}
+	
+	@RequestMapping(value="/workspace/github/script/{pullMethod}", method=RequestMethod.GET)
+	@ResponseBody
+	public String getGithubBuildScriptContent(@PathVariable int pullMethod) {
+		boolean sparseCheckout = (pullMethod == 1);
+		Workspace githubWorkspace = mWorkspaceFactory.createGithubWorkspace(sparseCheckout);
+		String scriptFilePath = githubWorkspace.getScriptFilePath();
+		String scriptFileContent = "";
+		try {
+			FileUtil fileUtil = new FileUtil();
+			scriptFileContent = fileUtil.getStringFromFile(scriptFilePath);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			scriptFileContent = "Failed to load script !";
+		}
+		return scriptFileContent;
 	}
 	
 	@RequestMapping(value="/workspace/edit/{workspaceId}", method=RequestMethod.GET)

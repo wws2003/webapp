@@ -10,6 +10,10 @@ public class WorkspaceFactoryImpl implements IWorkspaceFactory {
 
 	private String mWorkspaceDefaultDirectoryPath;
 	private String mWorkspaceDefaultBuildScriptFileName;
+	private String mGithubWorkspaceScriptDirectoryPath;
+	
+	private static final String GITHUB_SPARSE_CHECKOUT_SCRIPT_NAME = "git_sparse_checkout.sh";
+	private static final String GITHUB_DENSE_CHECKOUT_SCRIPT_NAME = "git_dense_checkout.sh";
 	
 	@Override
 	public Workspace createWorkspace(String workspaceName, String buildScriptFileName) {
@@ -29,8 +33,19 @@ public class WorkspaceFactoryImpl implements IWorkspaceFactory {
 		this.mWorkspaceDefaultBuildScriptFileName = workspaceDefaultBuildScriptFileName;
 	}
 	
+	public void setGithubWorkspaceScriptDirectoryPath(String githubWorkspaceScriptDirectoryPath) {
+		mGithubWorkspaceScriptDirectoryPath = githubWorkspaceScriptDirectoryPath;
+	}
+	
 	private void setUpWorkspaceDir(Workspace workspace) {
 		FileUtil fileUtil = new FileUtil();
 		fileUtil.createDirectoryIfNotExist(workspace.getDirectoryPath());
+	}
+
+	@Override
+	public Workspace createGithubWorkspace(boolean sparseCheckout) {
+		Workspace workspace = new Workspace();
+		workspace.setScriptFilePath(mGithubWorkspaceScriptDirectoryPath + File.separator + (sparseCheckout ? GITHUB_SPARSE_CHECKOUT_SCRIPT_NAME : GITHUB_DENSE_CHECKOUT_SCRIPT_NAME));
+		return workspace;
 	}
 }

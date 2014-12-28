@@ -81,6 +81,8 @@
 			value="${com.techburg.autospring.factory.impl.WorkspaceFactoryImpl.workspaceDefaultDirectoryPath}"></property>
 		<property name="workspaceDefaultBuildScriptFileName"
 			value="${com.techburg.autospring.factory.impl.WorkspaceFactoryImpl.workspaceDefaultBuildScriptFileName}"></property>
+		<property name="githubWorkspaceScriptDirectoryPath"
+			value="${com.techburg.autospring.factory.impl.WorkspaceFactoryImpl.githubWorkspaceScriptDirectoryPath}"></property>
 	</bean>
 
 	<!-- <bean name="browsingService"
