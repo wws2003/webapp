@@ -30,8 +30,12 @@ body {
 }
 
 .main_content {
-	padding-left: 0.5%;
+	padding-left: 0.75%;
 	padding-right: 0.75%;
+}
+
+.main_content form {
+	padding-left: 1%;
 }
 
 .container-footer { 
@@ -40,6 +44,7 @@ body {
    left: 8%;
    right: 0;
    height: 10%;
+   padding-left: 1%;
    background-color: transparent;
 }
 

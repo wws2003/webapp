@@ -13,7 +13,7 @@
 }
 
 .round-button {
-	width:27%;
+	width:26%;
 	display: inline-block;
 	margin:0 10px 0 10px;
 }
@@ -37,8 +37,10 @@
 		<div class="container_header">Simplest CI !</div>
 		<div class="main_content">
 			<div>
-				<h3><b>Workspace description</b></h3>
+				<h4><b>Workspace description</b></h4>
 				<p>${workspaceDescription}</p>
+				<h4><b>Workspace status</b></h4>
+				<p>Coming soon...</p>
 			</div>
 			<div class="round-buttons-div">
 				<div class="round-buttons-line">
@@ -57,6 +59,8 @@
 				</div>
 			</div>
 			<div class="container-footer">
+				<a href='<c:url value="/workspace/edit/${workspaceId}"></c:url>'>Edit workspace</a>
+		&nbsp;&nbsp;&nbsp;
 				<a href='<c:url value="/workspace/list"></c:url>'>To workspace list</a>
 		&nbsp;&nbsp;&nbsp;
 				<a href='<c:url value="/home"></c:url>'>To home page</a>

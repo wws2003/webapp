@@ -3,3 +3,7 @@ div.vertical-explanation {
 	visibility: hidden;
 	text-align: center;
 }
+
+.main_content div h4 {
+	margin-bottom: 10px;
+}

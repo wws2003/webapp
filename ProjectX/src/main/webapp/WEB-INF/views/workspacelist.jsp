@@ -14,11 +14,18 @@
 		<div class="main_content">
 				<c:forEach items="${workspaces}" var="element">
 					<div class="workspace_div">
-						<div>Workspace id: ${element.id}</div>
-						<div>Workspace directory: ${element.directoryPath}</div>
-						<div>Workspace build script path:${element.scriptFilePath} </div>
-						<div><a href='<c:url value="/workspace/detail/${element.id}"></c:url>'>Workspace details</a></div>
-						<div><a href='<c:url value="/workspace/edit/${element.id}"></c:url>'>Workspace edit</a></div>
+						<h4>Workspace ${element.id} </h4>
+						<p>
+							${element.description}
+						</p>
+						<h4>Details:</h4>
+						<div>
+							<div>- Workspace directory: ${element.directoryPath}</div>
+							<div>- Workspace build script path:${element.scriptFilePath} </div>
+							<span>
+								<a href='<c:url value="/workspace/detail/${element.id}"></c:url>'>More ..</a>
+							</span>
+						</div>
 					</div>
 				</c:forEach>
 				<div class="container-footer" style="position: static;">

@@ -3,9 +3,25 @@
 	border: 1px solid;
 	margin-top: 4px;
 	margin-bottom: 14px;
+	padding-left: 8px;
 }
 
 .workspace_div div {
 	margin-top: 3px;
-	margin-bottom: 3px;
+	margin-bottom: 7px;
+}
+
+.workspace_div p {
+	margin-top: 8px;
+	margin-bottom: 8px;
+}
+
+.workspace_div h4{
+	margin-bottom: 8px;
+	margin-top: 8px;
+}
+
+.workspace_div span a {
+	margin-right: 12px;
+	margin-left: 5px;
 }

@@ -32,10 +32,10 @@ input, textarea  {
 				</c:if>
 				
 				Workspace description: <br>
-				<textarea rows="4" cols="80" name="workspacedescription"><c:out value="${not empty edittingWorkspace ? edittingWorkspace.description : ''}"></c:out></textarea><br>
+				<textarea rows="5" cols="80" name="workspacedescription"><c:out value="${not empty edittingWorkspace ? edittingWorkspace.description : ''}"></c:out></textarea><br>
 				
 				Script content: <br>
-				<textarea rows="25" cols="80" name="buildscriptcontent"><c:out value="${not empty edittingWorkspace ? scriptContent : ''}"></c:out></textarea>
+				<textarea rows="24" cols="80" name="buildscriptcontent"><c:out value="${not empty edittingWorkspace ? scriptContent : ''}"></c:out></textarea>
 					
 				<br> <input type="submit" value="Submit"> <br>
 			</form>

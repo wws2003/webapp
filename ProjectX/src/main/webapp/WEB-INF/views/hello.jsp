@@ -13,12 +13,31 @@
 		<div class="container_header">Simplest CI !</div>
 		<div class="main_content">
 			<div style="margin-bottom: 20px;">
-				A sample CI application. It was triggered to create a simple continuous integration for my program solving the problem of
-				Parallel Particles <a
-					href="http://www.eecs.berkeley.edu/~carazvan/2010bootcamp/index.html">here</a>, and then extended to be able to handle multiple projects.
-				<br><br> Multiple workspaces with build script are now available. Workspace browsing is also supported.
+				Yet-another-very-sample CI application, solely for self-education purpose. Focused techniques are not limited in web developing techniques using Spring framework, but 
+				extended to other fields in Java Core. In particular, concurrency handling is critical to support queued build tasks and read-write synchronization for the SQLite DBMS.
+				<div>
+					<h4>Milestones</h4>
+					[2014/08] Getting started with single workspace
+					<br> 
+					[2014/11] Multiple workspaces with different build scripts are now available. Workspace browsing is also supported.
+					<br>
+					[2014/12] GUI tweaked
+					<br>
+					[2015/01] Helper to import project from GitHub, including sparse-checkout
+				</div>
 				
-				<br><br> This web application would support visualization of build progress directly on browser soon.
+				<div>
+					<h4>TODO List</h4>
+					[1] Real-time export workspace build output to browser, instead of log-file-only tracing
+					<br>
+					[2] Deployment of better, higher level concurrency handling techniques such as Non-blocking algorithms, Write-ahead log (?)
+					<br>
+					[3] Integration of Spring Security
+					<br>
+					[4] Notification on build-failure
+					<br>
+				</div>
+				
 			</div>
 			
 			<div class="round-buttons-div">
