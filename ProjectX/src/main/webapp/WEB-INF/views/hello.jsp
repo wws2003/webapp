@@ -13,17 +13,17 @@
 		<div class="container_header">Simplest CI !</div>
 		<div class="main_content">
 			<div style="margin-bottom: 20px;">
-				Yet-another-very-sample CI application, solely for self-education purpose. Focused techniques are not limited in web developing techniques using Spring framework, but 
+				Yet-a-very-simple so-called Continuous-Integration application, solely for self-education purpose. Focused techniques are not limited in web developing techniques using Spring framework, but 
 				extended to other fields in Java Core. In particular, concurrency handling is critical to support queued build tasks and read-write synchronization for the SQLite DBMS.
 				<div>
 					<h4>Milestones</h4>
-					[2014/08] Getting started with single workspace
+					[2014/08] Getting started with single workspace, "workspace build" means running user-written Unix script
 					<br> 
 					[2014/11] Multiple workspaces with different build scripts are now available. Workspace browsing is also supported.
 					<br>
 					[2014/12] GUI tweaked
 					<br>
-					[2015/01] Helper to import project from GitHub, including sparse-checkout
+					[2015/01] Helper to import project from GitHub easier, including sparse-checkout
 				</div>
 				
 				<div>
