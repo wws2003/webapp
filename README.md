@@ -1,7 +1,7 @@
 webapp
 ======
 
-For web applications. Currently there is only a Spring MVC-based web application: Simplest CI - A very simple so-called Continous Integration, developed solely for self-education purpose. Link to the application deployed on Amazon Web Service: [http://54.201.201.43:8080/autospring/workspace/detail/4](http://54.201.201.43:8080/autospring/workspace/detail/4).
+For web applications. Currently there is only a Spring MVC-based web application: Simplest CI - A very simple so-called Continous Integration, developed solely for self-education purpose. Link to the application deployed on Amazon Web Service: [http://54.201.201.43:8080/autospring/home](http://54.201.201.43:8080/autospring/home).
 
 ## Technologies
 1. MVC Framework: Spring 3.1
