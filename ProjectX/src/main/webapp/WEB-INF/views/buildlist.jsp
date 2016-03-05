@@ -22,7 +22,8 @@
 					<div>Id</div>
 					<div>Status</div>
 					<div>Begin time</div>
-					<div style="width: 48%">Log file path</div>
+					<div style="width: 52%">Log file path</div>
+					<div class="progress">Progress</div>
 				</div>
 			
 				<c:forEach items="${buildingList}" var="element">
@@ -30,7 +31,8 @@
 						<div>${element.id}</div>
 						<div>Building</div>
 						<div>${element.beginTimeStamp}</div>
-						<div style="width: 48%">${element.logFilePath}</div>
+						<div class="long_text" style="width: 52%;">${element.logFilePath}</div>
+						<div class="progress"><a href='<c:url value='/buildstream?workspaceid=${builtInfoPage.workspaceId}'></c:url>'>Running</a></div>
 					</div>
 				</c:forEach>
 			</div>
@@ -69,7 +71,7 @@
 								<div>${element.status == 0 ? "OK" : (element.status == 2 && empty element.beginTimeStamp ? "Cancelled by user" : "NG")}</div>
 								<div>${not empty element.beginTimeStamp ? element.beginTimeStamp : "---"}</div>
 								<div>${not empty element.endTimeStamp ? element.endTimeStamp : "---"}</div>
-								<div>${element.logFilePath}</div>
+								<div class="long_text">${element.logFilePath}</div>
 								<c:url value="/log/${element.id}" var="logUrl"></c:url>
 								<div><c:choose><c:when test="${not empty element.beginTimeStamp}"><a href='${logUrl}'>Detail</a></c:when><c:otherwise>---</c:otherwise></c:choose></div>
 							</div>

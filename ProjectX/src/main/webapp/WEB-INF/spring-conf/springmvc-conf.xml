@@ -17,17 +17,6 @@
 
 	<context:property-placeholder location="classpath:locations.properties" />
 
-	<bean
-		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="prefix">
-			<value>/WEB-INF/views/</value>
-		</property>
-		<property name="suffix">
-			<value>.jsp</value>
-		</property>
-		<property name="order" value="2"></property>
-	</bean>
-
 	<bean name="buildInfoPersistenceService"
 		class="com.techburg.autospring.service.impl.BuildInfoPersistenceServiceJPAImpl">
 	</bean>
@@ -42,10 +31,15 @@
 	<bean name="buildInfoBo" class="com.techburg.autospring.bo.impl.BuildInfoBoImpl">
 	</bean>
 
-	<bean name="dBTaskLockFactory" class="com.techburg.autospring.factory.impl.DBTaskLockFactorySimpleImpl"></bean>
-	
+	<bean name="dBTaskLockFactory"
+		class="com.techburg.autospring.factory.impl.DBTaskLockFactorySimpleImpl"></bean>
+
 	<bean name="dBTaskExecutor"
 		class="com.techburg.autospring.db.task.impl.ThreadPoolDBTaskExecutorImpl">
+	</bean>
+
+	<bean name="buildStreamService"
+		class="com.techburg.autospring.service.impl.MapBasedBuildStreamServiceImpl">
 	</bean>
 
 	<bean name="buildDataService"
@@ -85,9 +79,8 @@
 			value="${com.techburg.autospring.factory.impl.WorkspaceFactoryImpl.githubWorkspaceScriptDirectoryPath}"></property>
 	</bean>
 
-	<!-- <bean name="browsingService"
-		class="com.techburg.autospring.service.impl.BrowsingServiceImpl">
-	</bean> -->
+	<!-- <bean name="browsingService" class="com.techburg.autospring.service.impl.BrowsingServiceImpl"> 
+		</bean> -->
 
 	<bean name="browsingServiceDelegate"
 		class="com.techburg.autospring.service.impl.BrowsingServiceDelegateImpl">

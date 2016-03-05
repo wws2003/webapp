@@ -46,7 +46,7 @@ public abstract class AbstractBuildTask implements IBuildTask{
 			return BuildTaskResult.CANCELLED;
 		}
 		mBeginBuildTime = new Date();
-		StringBuilder buildOutput = new StringBuilder();
+		StringBuffer buildOutput = new StringBuffer();
 		int ret = mainExecute(buildOutput);
 		postExecuted(buildOutput.toString());
 		mEndBuildTime = new Date();
@@ -116,5 +116,5 @@ public abstract class AbstractBuildTask implements IBuildTask{
 		}
 	}
 	
-	protected abstract int mainExecute(StringBuilder buildOutput);
+	protected abstract int mainExecute(StringBuffer buildOutput);
 }

@@ -20,6 +20,11 @@ td,th {
 	margin-top: 18px;
 }
 
+.build_list_head {
+	background-color: #A9D0F5!important;
+	border-top: 1px solid black!important;
+}
+
 .build_list_row {
 	background-color: #E0F8F1;
 	padding-bottom: 2px;
@@ -29,14 +34,15 @@ td,th {
 	border-right: 1px solid black;
 }
 
-.build_list_head {
-	background-color: #A9D0F5;
-	border-top: 1px solid black;
-}
-
 .build_list_row div {
 	display: inline-block;
 	vertical-align: middle;
+}
+
+.build_list_row div.progress {
+	text-align:center!important;
+	padding-left: 1%!important;
+	width: 8%!important;
 }
 
 .build_list_row div:nth-child(1) {
@@ -62,7 +68,6 @@ td,th {
 
 .build_list_row div:nth-child(5) {
 	text-align:center;
-	word-wrap: break-word;
 	width: 49%;
 }
 
@@ -70,6 +75,10 @@ td,th {
 	text-align:center;
 	padding-left: 1%;
 	width: 8%;
+}
+
+.long_text {
+	word-wrap: break-word;
 }
 
 .page_line {

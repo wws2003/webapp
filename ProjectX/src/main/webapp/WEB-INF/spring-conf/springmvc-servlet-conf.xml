@@ -16,6 +16,17 @@
 	<!-- <mvc:resources location="/resources" mapping="/resources/**"/> -->
 	<mvc:annotation-driven />
 
+	<bean id="urlMapping"
+		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<value>/buildstream=staticFilenameViewController</value>
+		</property>
+	</bean>
+
+	<bean id="staticFilenameViewController"
+		class="org.springframework.web.servlet.mvc.UrlFilenameViewController">
+	</bean>
+
 	<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix">
@@ -26,6 +37,6 @@
 		</property>
 		<property name="order" value="2"></property>
 	</bean>
-	
-	<mvc:default-servlet-handler/>
+
+	<mvc:default-servlet-handler />
 </beans>

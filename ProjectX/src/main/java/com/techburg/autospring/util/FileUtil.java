@@ -51,6 +51,15 @@ public class FileUtil {
 		}
 	}
 	
+	public void getStringFromInputStream(InputStream inputStream, StringBuffer outputBuffer) throws Exception {
+		int c;
+		byte[] b = new byte[10];
+		while ((c = inputStream.read(b)) != -1) {
+			String chunk = new String(b, 0, c);
+			outputBuffer.append(chunk);
+		}
+	}
+	
 	public void writeStringToOutputStream(String output, OutputStream outputStream) throws Exception {
 		byte[] outputByteArray = output.getBytes(Charset.forName("UTF-8"));
 		outputStream.write(outputByteArray);

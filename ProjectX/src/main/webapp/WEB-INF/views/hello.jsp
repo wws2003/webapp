@@ -12,34 +12,9 @@
 		<div class="sidebar"></div>
 		<div class="container_header">Simplest CI !</div>
 		<div class="main_content">
-			<div style="margin-bottom: 20px;">
-				Yet-a-very-simple so-called Continuous-Integration application, solely for self-education purpose. Focused techniques are not limited in web developing techniques using Spring framework, but 
+			Yet-a-very-simple so-called Continuous-Integration application, solely for self-education purpose. Focused techniques are not limited in web developing techniques using Spring framework, but 
 				extended to other fields in Java Core. In particular, concurrency handling is critical to support queued build tasks and read-write synchronization for the SQLite DBMS.
-				<div>
-					<h4>Milestones</h4>
-					[2014/08] Getting started with single workspace, "workspace build" means running user-written Unix script
-					<br> 
-					[2014/11] Multiple workspaces with different build scripts are now available. Workspace browsing is also supported.
-					<br>
-					[2014/12] GUI tweaked
-					<br>
-					[2015/01] Helper to import project from GitHub easier, including sparse-checkout
-				</div>
 				
-				<div>
-					<h4>TODO List</h4>
-					[1] Real-time export workspace build output to browser, instead of log-file-only tracing
-					<br>
-					[2] Deployment of better, higher level concurrency handling techniques such as Non-blocking algorithms, Write-ahead log (?)
-					<br>
-					[3] Integration of Spring Security
-					<br>
-					[4] Notification on build-failure
-					<br>
-				</div>
-				
-			</div>
-			
 			<div class="round-buttons-div">
 				<div class="round-buttons-line" id="div_btns_line">
 					<div class="round-button" id="btn_new">
@@ -69,6 +44,28 @@
 	    				</div>
 					</div>
 				</div>
+			</div>
+			<div>
+				<div>
+					<h4>Milestones</h4>
+					[2014/08] Getting started with single workspace, "workspace build" means running user-written Unix script
+					<br> 
+					[2014/11] Multiple workspaces with different build scripts are now available. Workspace browsing is also supported.
+					<br>
+					[2014/12] GUI tweaked
+					<br>
+					[2015/01] Helper to import project from GitHub easier, including sparse-checkout
+					<br>
+					[2016/03] Real-time export workspace build output to browser
+				</div>
+				<div>
+					<h4>TODO List</h4>
+					[1] Deployment of better, higher level concurrency handling techniques such as Non-blocking algorithms, Write-ahead log (?)
+					<br>
+					[2] Notification on build-failure
+					<br>
+				</div>
+				
 			</div>
 		</div>
 	</div>

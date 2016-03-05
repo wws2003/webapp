@@ -28,6 +28,7 @@ import com.techburg.autospring.model.business.BuiltInfoPage;
 import com.techburg.autospring.model.business.Workspace;
 import com.techburg.autospring.service.abstr.IBuildDataService;
 import com.techburg.autospring.service.abstr.IBuildInfoPersistenceService;
+import com.techburg.autospring.service.abstr.IBuildStreamService;
 import com.techburg.autospring.service.abstr.IWorkspacePersistenceService;
 import com.techburg.autospring.service.abstr.PersistenceResult;
 import com.techburg.autospring.task.abstr.IBuildTask;
@@ -42,12 +43,13 @@ public class BuildController {
 	private static final String gWaitingListAttributeName = "waitingList";
 	private static final String gPage = "page";
 	private static final String gBuiltInfoPage = "builtInfoPage";
-	
+
 	private IBuildDataService mBuildDataService;
 	private IBuildTaskProcessor mBuildTaskProcessor;
 	private IBuildTaskFactory mBuildTaskFactory;
 	private IBuildInfoPersistenceService mBuildInfoPersistenceService;
 	private IWorkspacePersistenceService mWorkspacePersistenceService;
+	private IBuildStreamService mBuildStreamService;
 
 	@Autowired
 	public void setBuildDataService(IBuildDataService buildDataService) {
@@ -74,6 +76,11 @@ public class BuildController {
 		mWorkspacePersistenceService = workspacePersistenceService;
 	}
 
+	@Autowired
+	public void setBuildStreamService(IBuildStreamService buildStreamService) {
+		mBuildStreamService = buildStreamService;
+	}
+	
 	@RequestMapping(value="/buildlist/{workspaceId}/", method=RequestMethod.GET) 
 	public String listBuildInfo(
 			@PathVariable long workspaceId,
@@ -92,7 +99,7 @@ public class BuildController {
 		mBuildDataService.getWaitingBuildInfoListOfWorkspace(waitingList, workspaceId);
 		model.addAttribute(gBuildingListAttributeName, buildingList);
 		model.addAttribute(gWaitingListAttributeName, waitingList);
-		
+
 		BuiltInfoPage builtInfoPage = getBuiltInfoPage(page, workspaceId);
 		if(builtInfoPage != null)
 			model.addAttribute(gBuiltInfoPage, builtInfoPage);
@@ -100,11 +107,22 @@ public class BuildController {
 		return "buildlist";
 	}
 
+	@RequestMapping(value="/buildingstream/{workspaceId}", method = RequestMethod.GET)
+	public @ResponseBody String getBuildingStream(@PathVariable long workspaceId) {
+		StringBuffer buildOutputBuffer = mBuildStreamService.getBuildOutputBufferForWorkspace(workspaceId);
+		if(buildOutputBuffer != null) {
+			return buildOutputBuffer.toString();
+		}
+		else {
+			return "Build process for workspace " + workspaceId + " should be terminated. See the persisted log instead";	
+		}
+	}
+
 	@RequestMapping(value="/testbuild/{workspaceId}/{numberOfBuildTask}", method=RequestMethod.GET) 
 	public String testBuild(@PathVariable long workspaceId, @PathVariable int numberOfBuildTask, Model model) {
 
 		String redirectURL = "redirect:/buildlist/" + workspaceId + "/";
-		
+
 		if(mBuildDataService == null) {
 			model.addAttribute(gServiceAvailableAttributeName, false);
 			return redirectURL;
@@ -211,7 +229,7 @@ public class BuildController {
 		if(loadResult != PersistenceResult.LOAD_SUCCESSFUL) {
 			return null;
 		}
-		
+
 		BuiltInfoPage builtInfoPage = new BuiltInfoPage();
 		builtInfoPage.setWorkspaceId(workspaceId);
 		builtInfoPage.setMaxPageNumber(maxPage);
@@ -220,7 +238,7 @@ public class BuildController {
 
 		return builtInfoPage;
 	}
-
+	
 	private void writeLogFileContentToServletResponse(String logFilePath, HttpServletResponse response) throws Exception {
 		InputStream logFileInputStream = null;
 		FileUtil fileUtil = new FileUtil();
@@ -249,4 +267,5 @@ public class BuildController {
 		}
 		return null;
 	}
+
 }
