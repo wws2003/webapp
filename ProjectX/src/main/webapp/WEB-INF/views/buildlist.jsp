@@ -6,6 +6,7 @@
 </c:if>
 <link rel="stylesheet" type="text/css" href="<c:url value='/resources/css/buildlist.css'></c:url>"></link> 
 <link rel="stylesheet" type="text/css" href="<c:url value='/resources/css/common.css'></c:url>"></link> 
+<link rel="stylesheet" type="text/css" href="<c:url value='/resources/css/sweetalert.css'></c:url>"></link> 
 </head>
 <body>
 <div class="container">
@@ -47,7 +48,9 @@
 					<div class="build_list_row">
 						<div>${element.id}</div>
 						<div>${element.status == 0 ? "Waiting" : "Cancelled"}</div>
-						<div><a href='<c:url value="/cancel/${element.id}"></c:url>'>Cancel</a></div>
+						<div>
+							<button <c:if test="${element.status != 0}">disabled="disabled"</c:if> id="btn_cancel_${element.id}" onclick="cancelTask(${element.id})">Cancel</button>
+						</div>
 					</div>
 				</c:forEach>
 			</div>
@@ -107,5 +110,8 @@
 </div>
 </div>
 </div>
+	<script type="text/javascript" src="<c:url value='/resources/js/jquery-1.9.0.min.js'></c:url>"></script>
+	<script type="text/javascript" src="<c:url value='/resources/js/sweetalert.min.js'></c:url>"></script>
+	<script type="text/javascript" src="<c:url value='/resources/js/buildlist.js'></c:url>"></script>
 </body>
 </html>

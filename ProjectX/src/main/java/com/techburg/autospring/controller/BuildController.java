@@ -188,9 +188,9 @@ public class BuildController {
 	}
 
 	@RequestMapping(value="/cancel/{taskId}", method=RequestMethod.GET)
-	public String cancelBuildTask(@PathVariable long taskId) {
+	public @ResponseBody String cancelBuildTask(@PathVariable long taskId) {
 		mBuildTaskProcessor.cancelTask(taskId);
-		return "cancel";
+		return "Your request has been queued to be processed. Just wait to see the result, and don't need to press the cancel button again";
 	}
 
 	@RequestMapping(value="/log/{buildId}", method=RequestMethod.GET) 
