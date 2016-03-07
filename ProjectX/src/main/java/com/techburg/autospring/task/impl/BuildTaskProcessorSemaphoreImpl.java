@@ -1,5 +1,6 @@
 package com.techburg.autospring.task.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
@@ -8,9 +9,12 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.techburg.autospring.model.business.BuildInfo;
+import com.techburg.autospring.model.business.GCMNotification;
 import com.techburg.autospring.model.business.Workspace;
 import com.techburg.autospring.service.abstr.IBrowsingObjectPersistentService;
 import com.techburg.autospring.service.abstr.IBuildInfoPersistenceService;
+import com.techburg.autospring.service.abstr.INotificationPersistenceService;
+import com.techburg.autospring.service.abstr.INotificationSenderService;
 import com.techburg.autospring.task.abstr.IBuildTask;
 import com.techburg.autospring.task.abstr.IBuildTaskProcessor;
 import com.techburg.autospring.task.abstr.IBuildTaskQueue;
@@ -19,7 +23,9 @@ public class BuildTaskProcessorSemaphoreImpl implements IBuildTaskProcessor, Dis
 
 	//private IBrowsingService mBrowsingService = null;
 	private IBrowsingObjectPersistentService mBrowsingObjectPersistentService = null;
-	protected IBuildInfoPersistenceService mBuildInfoPersistenceService = null;
+	private IBuildInfoPersistenceService mBuildInfoPersistenceService = null;
+	private INotificationPersistenceService mNotificationPersistenceService = null;
+	private INotificationSenderService mNotificationSenderService = null;
 	
 	public BuildTaskProcessorSemaphoreImpl() {
 		mQueueSemaphore = new Semaphore(0);
@@ -40,6 +46,16 @@ public class BuildTaskProcessorSemaphoreImpl implements IBuildTaskProcessor, Dis
 	@Autowired
 	public void setBrowsingObjectPersistentService(IBrowsingObjectPersistentService browsingObjectPersistentService) {
 		mBrowsingObjectPersistentService = browsingObjectPersistentService;
+	}
+	
+	@Autowired
+	public void setNotificationPersistenceService(INotificationPersistenceService notificationPersistenceService) {
+		mNotificationPersistenceService = notificationPersistenceService;
+	}
+	
+	@Autowired
+	public void setNotificationSenderService(INotificationSenderService notificationSenderService) {
+		mNotificationSenderService = notificationSenderService;
 	}
 	
 	@Override
@@ -160,18 +176,23 @@ public class BuildTaskProcessorSemaphoreImpl implements IBuildTaskProcessor, Dis
 				//Retrieve next task from queue and execute
 				IBuildTask nextBuildTask = mWaitingTaskQueue.popBuildTaskFromQueue();
 				if(nextBuildTask != null) {
-					mWaitingTaskQueue.setBuildingTask(nextBuildTask);
-					nextBuildTask.execute();
-					BuildInfo buildInfo = new BuildInfo();
-					nextBuildTask.storeToBuildInfo(buildInfo, true);
-					mWaitingTaskQueue.setBuildingTask(null);
-					mBuildInfoPersistenceService.persistBuildInfo(buildInfo);
-					recontructBrowsingStructure(nextBuildTask.getWorkspace());
+					executeBuildTask(nextBuildTask);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	private void executeBuildTask(IBuildTask nextBuildTask) throws Exception {
+		mWaitingTaskQueue.setBuildingTask(nextBuildTask);
+		nextBuildTask.execute();
+		BuildInfo buildInfo = new BuildInfo();
+		nextBuildTask.storeToBuildInfo(buildInfo, true);
+		mWaitingTaskQueue.setBuildingTask(null);
+		mBuildInfoPersistenceService.persistBuildInfo(buildInfo);
+		notifyBuildInfo(buildInfo);
+		recontructBrowsingStructure(nextBuildTask.getWorkspace());
 	}
 	
 	private void recontructBrowsingStructure(Workspace workspace) throws Exception {
@@ -187,6 +208,14 @@ public class BuildTaskProcessorSemaphoreImpl implements IBuildTaskProcessor, Dis
 				mBrowsingObjectPersistentService.persistBrowsingObjectInDirectory(workspace.getDirectoryPath(), true);
 			}
 		}
+	}
+	
+	private void notifyBuildInfo(BuildInfo buildInfo) {
+		//TODO Perhaps add another abstraction layer, to handle future notification such as E-mail, Mobile... rather than just GCM
+		List<String> gcmEndPoints = new ArrayList<String>();
+		mNotificationPersistenceService.getGCMEndPointsForWorkspace(buildInfo.getWorkspace().getId(), gcmEndPoints);
+		GCMNotification gcmNotification = new GCMNotification(buildInfo, gcmEndPoints);
+		mNotificationSenderService.sendGCMNotification(gcmNotification);
 	}
 
 	private boolean mStopped;

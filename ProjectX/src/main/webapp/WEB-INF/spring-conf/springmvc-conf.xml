@@ -49,6 +49,16 @@
 	<bean name="buildTaskProcessor"
 		class="com.techburg.autospring.task.impl.BuildTaskProcessorSemaphoreImpl">
 	</bean>
+	
+	<bean name="notificationPersistenceService"
+		class="com.techburg.autospring.service.impl.NotificationDummyPersistenceImpl">
+	</bean>
+	
+	<!-- Test refer bean by property -->
+	<bean name="notificationSenderService"
+		class="com.techburg.autospring.service.impl.NotificationSenderServiceSimpleImpl">
+		<property name="gCMNotificationBo" ref="gcmNotificationBo"></property>
+	</bean>
 
 	<bean name="waitingBuildTaskQueue"
 		class="com.techburg.autospring.task.impl.BuildTaskQueueDeImpl">
@@ -57,6 +67,12 @@
 	<bean name="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="persistenceUnitName" value="defaultManager" />
+	</bean>
+	
+	<bean name="gcmNotificationBo" 
+		class="com.techburg.autospring.bo.impl.GCMNotificationBoImpl">
+		<property name="rootURLPath"
+			value="${com.techburg.autospring.bo.impl.GCMNotificationBoImpl.rootURLPath}"></property>
 	</bean>
 
 	<bean name="buildTaskFactory"

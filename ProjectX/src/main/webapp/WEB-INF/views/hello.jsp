@@ -56,13 +56,11 @@
 					<br>
 					[2015/01] Helper to import project from GitHub easier, including sparse-checkout
 					<br>
-					[2016/03] Real-time export workspace build output to browser
+					[2016/03] Real-time export workspace build output to browser. Add simple build status notification via Google Chrome Extension
 				</div>
 				<div>
 					<h4>TODO List</h4>
 					[1] Deployment of better, higher level concurrency handling techniques such as Non-blocking algorithms, Write-ahead log (?)
-					<br>
-					[2] Notification on build-failure
 					<br>
 				</div>
 				
