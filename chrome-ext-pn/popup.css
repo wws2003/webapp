@@ -1,0 +1,22 @@
+body {
+  font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+  font-size: 100%;
+}
+#status {
+  /* avoid an excessively wide status text */
+  white-space: pre;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 400px;
+}
+#div_popup button {
+  width: 120px;
+}
+#div_registration_id {
+  margin-top: 10px;
+  font-size: 80%;
+}
+#div_registration_id button {
+  margin-top: 10px;
+  display: none;
+}

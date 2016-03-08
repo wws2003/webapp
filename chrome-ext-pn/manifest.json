@@ -1,0 +1,31 @@
+{
+  "manifest_version": 2,
+
+  "name": "Simplest CI Chrome Extension",
+  "description": "This extension receives Push Notification from Simplest CI",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "gcm",
+    "storage",
+    "activeTab",
+    "notifications",
+    "https://ajax.googleapis.com/"
+  ], 
+
+  // Note: Because of bug 134315, you must declare any images you
+  // want to use with createNotification() as a web accessible resource.
+  "web_accessible_resources": [
+    "icon48.png",
+    "icon64.png"
+  ], 
+
+  "background": {
+    "scripts": ["eventPage.js"],
+    "persistent": false
+  }
+}
