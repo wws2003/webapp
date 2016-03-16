@@ -1,0 +1,13 @@
+@CHARSET "UTF-8";
+
+.input_label {
+	position: absolute;
+}
+
+.input_field {
+	margin-left: 12%;
+}
+
+.input_container {
+	position: relative;
+}
