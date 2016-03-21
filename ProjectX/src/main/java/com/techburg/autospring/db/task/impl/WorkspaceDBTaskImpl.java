@@ -122,7 +122,6 @@ public class WorkspaceDBTaskImpl extends AbstractDBTask {
 		tx.begin();
 		try {
 			entityManager.persist(entity);
-			entityManager.detach(entity); //Do not need to manage this object longer !
 			tx.commit();
 		}
 		catch (PersistenceException pe) {
@@ -131,6 +130,8 @@ public class WorkspaceDBTaskImpl extends AbstractDBTask {
 			return PersistenceResult.PERSISTENCE_FAILED;
 		}
 		finally {
+			workspace.setId(entity.getId());//Remember stored id. Still does not work now (?)
+			entityManager.detach(entity); //Do not need to manage this object longer !
 			entityManager.close();
 		}
 		return mParamBrowsingObjectPersistentService.persistBrowsingObjectInDirectory(workspace.getDirectoryPath(), true);
@@ -145,7 +146,9 @@ public class WorkspaceDBTaskImpl extends AbstractDBTask {
 		EntityTransaction tx = entityManager.getTransaction();
 		tx.begin();
 		try {
+			//Probably set more attributes into entity
 			entity.setDescription(workspace.getDescription());
+			entity.setScriptFilePath(workspace.getScriptFilePath());
 			tx.commit();
 		}
 		catch (Exception e) {

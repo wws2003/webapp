@@ -46,12 +46,8 @@ public class BuildTaskUnixScriptImpl extends AbstractBuildTask {
 	protected int mainExecute(StringBuffer outputBuffer) {
 		mBuildStreamService.bindWorkspaceToBuildOutputBuffer(mWorkspace.getId(), outputBuffer);
 		
-		List<String> commandsAndArguments = new ArrayList<String>();
-		String scriptFilePath = (mWorkspace != null) ? mWorkspace.getScriptFilePath() : mDefaultScriptFileLocation + File.separator + mDefaultScriptFileName;
-		commandsAndArguments.add(gCommand);
-		commandsAndArguments.add(scriptFilePath);
-		ProcessBuilder processBuilder = new ProcessBuilder(commandsAndArguments);
-
+		ProcessBuilder processBuilder = generateProcessBuilder(mWorkspace);
+		
 		int result = BuildTaskResult.SUCCESSFUL;
 		try {
 			result = startProcessAndGetOutputString(processBuilder, outputBuffer);
@@ -65,7 +61,20 @@ public class BuildTaskUnixScriptImpl extends AbstractBuildTask {
 		
 		return result;
 	}
-
+	
+	private ProcessBuilder generateProcessBuilder(Workspace workspace) {
+		List<String> commandsAndArguments = new ArrayList<String>();
+		String scriptFilePath = (mWorkspace != null) ? mWorkspace.getScriptFilePath() : mDefaultScriptFileLocation + File.separator + mDefaultScriptFileName;
+		commandsAndArguments.add(gCommand);
+		commandsAndArguments.add(scriptFilePath);
+		ProcessBuilder processBuilder = new ProcessBuilder(commandsAndArguments);
+		
+		//Change working directory to workspace directory
+		processBuilder.directory(new File(workspace.getDirectoryPath()));
+		
+		return processBuilder;
+	}
+  
 	private int startProcessAndGetOutputString(ProcessBuilder processBuilder, StringBuffer outputBuffer) throws Exception {
 		FileUtil fileUtil = new FileUtil();
 		InputStream processBufferedOutputStream = null;

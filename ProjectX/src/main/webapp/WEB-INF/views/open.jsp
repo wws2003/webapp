@@ -6,6 +6,9 @@
 	padding-left: 5%;
 	margin-bottom: 20px;
 }
+textarea {
+	margin-top: 20px;
+}
 </style>
 <link rel="stylesheet" type="text/css" href="<c:url value='/resources/css/common.css'></c:url>"></link>
 </head>
@@ -16,10 +19,9 @@
 		<div class="main_content">
 			<c:choose>
 				<c:when test="${objectCanOpened}">
-					<div class="ct-div">Service available</div>
 					<div class="ct-div">
-						Script content<br>
-						<textarea rows="45" cols="100" name="objectContent"><c:out value="${objectContent}"></c:out></textarea>
+						File content<br>
+						<textarea rows="45" cols="105" name="objectContent"><c:out value="${objectContent}"></c:out></textarea>
 					</div>
 					<div class="ct-div">
 						<a href='<c:url value="/home"></c:url>'>To home page</a>

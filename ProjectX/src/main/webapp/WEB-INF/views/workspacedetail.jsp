@@ -45,7 +45,7 @@
 			<div class="round-buttons-div">
 				<div class="round-buttons-line">
 					<div class="round-button">
-	    				<div class="round-button-circle"><a href="<c:url value="/browse/${workspaceRootBrowsingObjectId}"></c:url>" >Browse workspace</a>
+	    				<div class="round-button-circle"><a href="<c:url value="/workspace/browse/${workspaceId}"></c:url>" >Browse workspace</a>
 	    				</div>
 					</div>
 					<div class="round-button">

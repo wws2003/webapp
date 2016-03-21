@@ -18,12 +18,13 @@ import com.techburg.autospring.service.abstr.PersistenceResult;
 public class BrowsingServiceDelegateImpl implements IBrowsingServiceDelegate {
 
 	private String mBrowsingRootPath;
-	private static final String[] gSupportedFileNames = {"makefile"};
-	private static final String[] gSupportedFileExts = {".c", ".cpp", ".h", ".sh", ".java", ".jsp", ".xml", ".properties", ".js", ".css", ".log"};
-
+	
 	private FileFilter mDirectoryFilter;
 	private FileFilter mFileFilter;
 
+	private String[] mSupportedFileNames = null;
+	private String[] mSupportedFileExts = null;
+	
 	public BrowsingServiceDelegateImpl() {
 		mDirectoryFilter = new TbgDirectoryFilter();
 		mFileFilter = new TbgFileFilter();
@@ -34,6 +35,16 @@ public class BrowsingServiceDelegateImpl implements IBrowsingServiceDelegate {
 		mBrowsingRootPath = browsingRootPath;
 	}
 
+	@Autowired
+	public void setSupportedFileNames(String[] supportedFileNames) {
+		mSupportedFileNames = supportedFileNames;
+	}
+	
+	@Autowired
+	public void setSupportedFileExts(String[] supportedFileExts) {
+		mSupportedFileExts = supportedFileExts;
+	}
+	
 	@Override
 	public int persistBrowsingObjectInDirectory(String directoryPath, IBrowsingObjectPersistentService browsingObjectPersistentService) {
 		if(directoryPath == null) {
@@ -117,13 +128,13 @@ public class BrowsingServiceDelegateImpl implements IBrowsingServiceDelegate {
 
 	private boolean isOpenFileBrowserFile(File file) {
 		String fileName = file.getName();
-		for(String supportedName : gSupportedFileNames) {
+		for(String supportedName : mSupportedFileNames) {
 			if(supportedName.equals(fileName)) {
 				return true;
 			}
 		}
 		String fileExt = getFileExtension(file);
-		for(String supportedExt : gSupportedFileExts) {
+		for(String supportedExt : mSupportedFileExts) {
 			if(supportedExt.equals(fileExt)) {
 				return true;
 			}

@@ -19,7 +19,10 @@
 	<bean id="urlMapping"
 		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="mappings">
-			<value>/buildstream=staticFilenameViewController</value>
+			<value>
+				/buildstream=staticFilenameViewController
+				/error=staticFilenameViewController
+			</value>
 		</property>
 	</bean>
 

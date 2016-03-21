@@ -1,5 +1,7 @@
 package com.techburg.autospring.model.business;
 
+import java.io.File;
+
 public class Workspace {
 	private long mId;
 	private String mScriptFilePath;
@@ -32,6 +34,14 @@ public class Workspace {
 	}
 	public void setDescription(String description) {
 		this.mDescription = description;
+	}
+	
+	public String getName() {
+		File workspaceFolder = new File(mDirectoryPath);
+		if(workspaceFolder.exists() && workspaceFolder.isDirectory()) {
+			return workspaceFolder.getName();
+		}
+		return "Unknown name";
 	}
 
 }

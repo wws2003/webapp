@@ -4,6 +4,7 @@ var g_denseCheckoutScriptUrl = "/autospring/workspace/github/script/0";
 var g_sparseCheckoutScriptUrl = "/autospring/workspace/github/script/1";
 var g_githubRepositoryPattern = /REPOSRC.*\n/i;
 var g_githubSubDirectoryPattern = /SUBDIR.*\n/i;
+var g_workspaceFolderPattern = "${YourWorkSpaceSrcFolder}";
 
 function loadScripContent(sparseCheckout) {
 	var scriptUrl = sparseCheckout ? g_sparseCheckoutScriptUrl : g_denseCheckoutScriptUrl;
@@ -27,6 +28,12 @@ function updateGithubRepository(repository) {
 function updateGithubSubDirectory(subDirectory) {
 	var scriptContent = $("#txtarea_scriptcontent").val();
 	scriptContent = scriptContent.replace(g_githubSubDirectoryPattern, subDirectory);
+	$("#txtarea_scriptcontent").val(scriptContent);
+}
+
+function updateWorkspaceFolder(workspaceFolderName) {
+	var scriptContent = $("#txtarea_scriptcontent").val();
+	scriptContent = scriptContent.replace(g_workspaceFolderPattern, workspaceFolderName);
 	$("#txtarea_scriptcontent").val(scriptContent);
 }
 
@@ -71,5 +78,8 @@ $(document).ready(function() {
 			subDir = "SUBDIR=" + subDir + "\n";
 			updateGithubSubDirectory(subDir);
 		}
+		//Treat workspace name as workspace 's folder name
+		var workspaceFolderName = $("#txt_workspace_name").val();
+		updateWorkspaceFolder(workspaceFolderName);
 	});
 });

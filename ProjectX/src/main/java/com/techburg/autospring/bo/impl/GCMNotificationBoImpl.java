@@ -61,6 +61,6 @@ public class GCMNotificationBoImpl implements IGCMNotificationBo {
 	}
 	
 	private String getWorkspaceLink(Workspace workspace) {
-		return mRootURLPath + "/buildlist/" + workspace.getId();
+		return mRootURLPath + "/buildlist/" + workspace.getId() + "/";
 	}
 }

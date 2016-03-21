@@ -17,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.techburg.autospring.model.business.BrowsingObject;
 import com.techburg.autospring.model.business.BrowsingObject.ObjectType;
@@ -101,6 +102,23 @@ public class BrowsingController {
 		}
 
 		return openPage;
+	}
+	
+	@RequestMapping(value="/api/getFileContent/{id}", method = RequestMethod.GET)
+	@ResponseBody
+	public String getFileContent(@PathVariable long id) throws Exception {
+		try {
+			BrowsingObject browsingObject = mBrowsingPersistentService.getBrowsingObjectById(id);
+			if(browsingObject != null && browsingObject.getOpenType() == OpenType.OPEN_BY_BROWSER) {
+				FileUtil util = new FileUtil();
+				String objectContent = util.getStringFromFile(browsingObject.getAbsolutePath());
+				return objectContent;
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "[WARNING]File content not avaiable";
 	}
 
 	@RequestMapping(value="/download/{id}", method = RequestMethod.GET)

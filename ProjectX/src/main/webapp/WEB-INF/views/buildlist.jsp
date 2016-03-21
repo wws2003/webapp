@@ -24,7 +24,6 @@
 					<div>Status</div>
 					<div>Begin time</div>
 					<div style="width: 52%">Log file path</div>
-					<div class="progress">Progress</div>
 				</div>
 			
 				<c:forEach items="${buildingList}" var="element">
@@ -33,7 +32,7 @@
 						<div>Building</div>
 						<div>${element.beginTimeStamp}</div>
 						<div class="long_text" style="width: 52%;">${element.logFilePath}</div>
-						<div class="progress"><a href='<c:url value='/buildstream?workspaceid=${builtInfoPage.workspaceId}'></c:url>'>Running</a></div>
+						<div class="progress"><a href='<c:url value='/buildstream?workspaceid=${builtInfoPage.workspaceId}'></c:url>'>Progress</a></div>
 					</div>
 				</c:forEach>
 			</div>

@@ -14,7 +14,7 @@
 		<div class="main_content">
 				<c:forEach items="${workspaces}" var="element">
 					<div class="workspace_div">
-						<h4>Workspace ${element.id} </h4>
+						<h4>Workspace ${element.id}: ${element.name} </h4>
 						<p>
 							${element.description}
 						</p>

@@ -7,3 +7,15 @@ div.vertical-explanation {
 .main_content div h4 {
 	margin-bottom: 8px;
 }
+
+div .round-buttons-line #btn_new {
+	float: left;
+}
+
+div .round-buttons-line #btn_list {
+	float: right;
+}
+
+.main_content div.foot-note-div {
+	clear: both;
+}

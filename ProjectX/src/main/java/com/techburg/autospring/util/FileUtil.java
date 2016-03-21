@@ -5,6 +5,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -25,7 +26,7 @@ public class FileUtil {
 			inputStream.close();
 		}
 	}
-	
+
 	public void storeContentToFile(String content, String fileName) throws Exception {
 		OutputStream outputStream = null;
 		try {
@@ -41,7 +42,14 @@ public class FileUtil {
 			outputStream.close();
 		}
 	}
-	
+
+	public void removeAtPath(String filePath) throws Exception {
+		File file = new File(filePath);
+		if(file.exists()) {
+			recursiveRemoveFile(file);
+		}
+	}
+
 	public void getStringFromInputStream(InputStream inputStream, StringBuilder outputBuilder) throws Exception {
 		int c;
 		byte[] b = new byte[1024];
@@ -50,7 +58,7 @@ public class FileUtil {
 			outputBuilder.append(chunk);
 		}
 	}
-	
+
 	public void getStringFromInputStream(InputStream inputStream, StringBuffer outputBuffer) throws Exception {
 		int c;
 		byte[] b = new byte[10];
@@ -59,16 +67,31 @@ public class FileUtil {
 			outputBuffer.append(chunk);
 		}
 	}
-	
+
 	public void writeStringToOutputStream(String output, OutputStream outputStream) throws Exception {
 		byte[] outputByteArray = output.getBytes(Charset.forName("UTF-8"));
 		outputStream.write(outputByteArray);
 	}
-	
+
 	public void createDirectoryIfNotExist(String directoryPath) {
 		File file = new File(directoryPath);
 		if(!file.exists()) {
 			file.mkdir();
 		}
+	}
+
+	private void recursiveRemoveFile(File file) throws IOException {
+		if(!file.exists()) {
+			return;
+		}
+		if(file.isDirectory()) {
+			File[] subFiles = file.listFiles();
+			if(subFiles != null) {
+				for(File subFile : subFiles) {
+					recursiveRemoveFile(subFile);
+				}	
+			}
+		}
+		file.delete();
 	}
 }

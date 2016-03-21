@@ -12,6 +12,7 @@ function hide2NewButtons() {
 	$("#btn_new").show();
 	$("#btn_new_github").hide();
 	$("#btn_new_normal").hide();
+	//Restore initial view parameters
 	$(".round-button").css({"width": "40%"});
 	$(".round-button").css({"margin": "0 15px 0 15px"});
 	$("#div_btns_line").css({"width": "50%"});

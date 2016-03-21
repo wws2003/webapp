@@ -44,17 +44,17 @@ public class WorkspacePersistenceServiceJPAImpl implements IWorkspacePersistence
 	}
 
 	@Override
-	public int persistWorkspace(Workspace workspace) {
+	public int persistWorkspace(Workspace workspace, boolean isSyncMode) {
 		WorkspaceDBTaskImpl workspacePersistTask = new WorkspaceDBTaskImpl(mWorkspaceBo, mEntityManagerFactory);
 		try {
 			workspacePersistTask.setPersistParams(workspace, mBrowsingObjectPersistentService);
-			workspacePersistTask.setScheduleMode(AbstractDBTask.SCHEDULE_ASYNC_MODE);
+			workspacePersistTask.setScheduleMode(isSyncMode ? AbstractDBTask.SCHEDULE_SYNC_MODE : AbstractDBTask.SCHEDULE_SYNC_MODE);
 			mDBTaskExecutor.executeDBTask(workspacePersistTask);
 		}
 		catch (Exception e) {
 			return PersistenceResult.PERSISTENCE_FAILED;
 		}
-		return PersistenceResult.REQUEST_QUEUED;
+		return isSyncMode ? PersistenceResult.REMOVE_SUCCESSFUL: PersistenceResult.REQUEST_QUEUED;
 	}
 
 	@Override

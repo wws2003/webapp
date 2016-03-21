@@ -55,7 +55,7 @@ public class TestJPA3 {
 		
 		Workspace buildScript = new Workspace();
 		buildScript.setScriptFilePath("gafin.vn");
-		assertEquals(mBuildScriptPersistenceService.persistWorkspace(buildScript), PersistenceResult.PERSISTENCE_SUCCESSFUL);
+		assertEquals(mBuildScriptPersistenceService.persistWorkspace(buildScript, true), PersistenceResult.PERSISTENCE_SUCCESSFUL);
 
 		
 		List<Workspace> buildScripts = new ArrayList<Workspace>();
@@ -90,7 +90,7 @@ public class TestJPA3 {
 	public void testUpdate() {
 		Workspace buildScript = new Workspace();
 		buildScript.setScriptFilePath("gafin.vn");
-		assertEquals(mBuildScriptPersistenceService.persistWorkspace(buildScript), PersistenceResult.PERSISTENCE_SUCCESSFUL);
+		assertEquals(mBuildScriptPersistenceService.persistWorkspace(buildScript, true), PersistenceResult.PERSISTENCE_SUCCESSFUL);
 
 		List<Workspace> buildScripts = new ArrayList<Workspace>();
 		WorkspacePersistenceQuery query2 = new WorkspacePersistenceQuery();

@@ -49,11 +49,27 @@
 	<bean name="buildTaskProcessor"
 		class="com.techburg.autospring.task.impl.BuildTaskProcessorSemaphoreImpl">
 	</bean>
-	
+
 	<bean name="notificationPersistenceService"
 		class="com.techburg.autospring.service.impl.NotificationDummyPersistenceImpl">
 	</bean>
+
+	<bean name="workspaceFileUploadFilterBean"
+		class="com.techburg.autospring.filter.WorkspaceFileUploadFilter">
+		<property name="acceptedFileTypes">
+			<array>
+				<value>application/zip</value>
+				<value>application/x-zip</value>
+				<value>application/x-zip-compressed</value>
+			</array>
+		</property>
+		<property name="multipartResolver" ref="multipartResolver"></property>
+	</bean>
 	
+	<bean name="workspaceFileSystemDelegate" 
+		class="com.techburg.autospring.delegate.impl.WorkspaceFileSystemDelegateImpl">
+	</bean>
+
 	<!-- Test refer bean by property -->
 	<bean name="notificationSenderService"
 		class="com.techburg.autospring.service.impl.NotificationSenderServiceSimpleImpl">
@@ -68,11 +84,14 @@
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="persistenceUnitName" value="defaultManager" />
 	</bean>
-	
-	<bean name="gcmNotificationBo" 
-		class="com.techburg.autospring.bo.impl.GCMNotificationBoImpl">
+
+	<bean name="gcmNotificationBo" class="com.techburg.autospring.bo.impl.GCMNotificationBoImpl">
 		<property name="rootURLPath"
 			value="${com.techburg.autospring.bo.impl.GCMNotificationBoImpl.rootURLPath}"></property>
+	</bean>
+	
+	<bean name="multipartResolver" 
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 	</bean>
 
 	<bean name="buildTaskFactory"
@@ -100,6 +119,36 @@
 
 	<bean name="browsingServiceDelegate"
 		class="com.techburg.autospring.service.impl.BrowsingServiceDelegateImpl">
+		<property name="supportedFileNames">
+			<array>
+				<value>makefile</value>
+				<value>Makefile</value>
+			</array>
+		</property>
+		<property name="supportedFileExts">
+			<array>
+				<value>.c</value>
+				<value>.h</value>
+				<value>.cpp</value>
+				<value>.java</value>
+				<value>.rb</value>
+				<value>.py</value>
+				<value>.r</value>
+				<value>.pl</value>
+				<value>.js</value>
+				<value>.html</value>
+				<value>.htm</value>
+				<value>.jsp</value>
+				<value>.css</value>
+				<value>.log</value>
+				<value>.properties</value>
+				<value>.xml</value>
+				<value>.json</value>
+				<value>.plist</value>
+				<value>.conf</value>
+				<value>.sh</value>
+			</array>
+		</property>
 		<property name="browsingRootPath"
 			value="${com.techburg.autospring.service.impl.BrowsingServiceDelegateImpl.browsingRootPath}"></property>
 	</bean>

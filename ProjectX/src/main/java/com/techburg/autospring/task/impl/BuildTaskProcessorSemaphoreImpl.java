@@ -191,6 +191,8 @@ public class BuildTaskProcessorSemaphoreImpl implements IBuildTaskProcessor, Dis
 		nextBuildTask.storeToBuildInfo(buildInfo, true);
 		mWaitingTaskQueue.setBuildingTask(null);
 		mBuildInfoPersistenceService.persistBuildInfo(buildInfo);
+		
+		//FIXME Post process. Should use advice or something similar for the spirit of AOP 
 		notifyBuildInfo(buildInfo);
 		recontructBrowsingStructure(nextBuildTask.getWorkspace());
 	}
@@ -204,8 +206,8 @@ public class BuildTaskProcessorSemaphoreImpl implements IBuildTaskProcessor, Dis
 			}
 			else {
 				//Partially reconstruct DB
-				mBrowsingObjectPersistentService.removeBrowsingObjectInDirectory(workspace.getDirectoryPath(), true);
-				mBrowsingObjectPersistentService.persistBrowsingObjectInDirectory(workspace.getDirectoryPath(), true);
+				mBrowsingObjectPersistentService.removeBrowsingObjectInDirectory(workspace.getDirectoryPath(), false);
+				mBrowsingObjectPersistentService.persistBrowsingObjectInDirectory(workspace.getDirectoryPath(), false);
 			}
 		}
 	}

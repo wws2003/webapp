@@ -16,10 +16,10 @@ input, textarea  {
 		<div class="sidebar"></div>
 		<div class="container_header">Simplest CI !</div>
 		<div class="main_content input_container">
-			<form action='<c:url value="/workspace/new"></c:url>' method="POST">
-				<span class="input_label">Workspace name: </span><input name="workspacename" type="text" class="input_field"><br>
+			<form action='<c:url value="/workspace/create_github"></c:url>' method="POST">
+				<span class="input_label">Workspace name: </span><input name="workspacename" id="txt_workspace_name" type="text" class="input_field"><br>
 				
-				<span class="input_label">Build script name: </span><input name="buildscriptname" type="text" class="input_field"><br>
+				<span class="input_label">Build script name: </span><input name="buildscriptname" type="text" class="input_field" value="autospring_build_script.sh"><br>
 				
 				<span class="input_label">Github repository: </span><input id="txt_github_repository" type="text" class="long-text input_field">
 				<span style="display: none;" id="spn_subdir_checkout"> Sub-directory <input id="txt_subdir_checkout" type="text"></span>

@@ -60,7 +60,7 @@ public class TestBrowsingObjectDB {
 		
 		//Test new workspace
 		Workspace newWorkspace = mWorkspaceFactory.createWorkspace("workspace5", "script.sh");
-		mWorkspacePersistenceService.persistWorkspace(newWorkspace);
+		mWorkspacePersistenceService.persistWorkspace(newWorkspace, true);
 		
 		//mTaskExecutor.waitAllFinish();
 	}
