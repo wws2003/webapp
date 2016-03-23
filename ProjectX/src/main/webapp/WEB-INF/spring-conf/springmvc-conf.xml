@@ -19,10 +19,13 @@
 
 	<bean name="buildInfoPersistenceService"
 		class="com.techburg.autospring.service.impl.BuildInfoPersistenceServiceJPAImpl">
+		<property name="dBTaskExecutor" ref="dBTaskExecutor"></property>
 	</bean>
 
 	<bean name="workspacePersistenceService"
 		class="com.techburg.autospring.service.impl.WorkspacePersistenceServiceJPAImpl">
+		<property name="dBTaskExecutor" ref="dBTaskExecutor"></property>
+		<property name="browsingObjectPersistentService" ref="noLockBrowsingObjectPersistentService"></property>
 	</bean>
 
 	<bean name="workspaceBo" class="com.techburg.autospring.bo.impl.WorkspaceBoImpl">
@@ -48,6 +51,7 @@
 
 	<bean name="buildTaskProcessor"
 		class="com.techburg.autospring.task.impl.BuildTaskProcessorSemaphoreImpl">
+		<property name="browsingObjectPersistentService" ref="browsingObjectPersistentService"></property>
 	</bean>
 
 	<bean name="notificationPersistenceService"
@@ -65,8 +69,8 @@
 		</property>
 		<property name="multipartResolver" ref="multipartResolver"></property>
 	</bean>
-	
-	<bean name="workspaceFileSystemDelegate" 
+
+	<bean name="workspaceFileSystemDelegate"
 		class="com.techburg.autospring.delegate.impl.WorkspaceFileSystemDelegateImpl">
 	</bean>
 
@@ -89,8 +93,8 @@
 		<property name="rootURLPath"
 			value="${com.techburg.autospring.bo.impl.GCMNotificationBoImpl.rootURLPath}"></property>
 	</bean>
-	
-	<bean name="multipartResolver" 
+
+	<bean name="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 	</bean>
 
@@ -155,9 +159,21 @@
 
 	<bean name="browsingObjectPersistentService"
 		class="com.techburg.autospring.service.impl.BrowsingObjectPersistentJPAImpl">
+		<property name="dBTaskExecutor" ref="dBTaskExecutor"></property>
 	</bean>
 
 	<bean name="browsingObjectBo" class="com.techburg.autospring.bo.impl.BrowsingObjectBoImpl">
+	</bean>
+
+	<!-- Should only wired by explicit reference. In this app, only in the case 
+		of workspacePersistenceService -->
+	<bean name="noLockBrowsingObjectPersistentService"
+		class="com.techburg.autospring.service.impl.BrowsingObjectPersistentJPAImpl">
+		<property name="dBTaskExecutor" ref="noLockDBTaskExecutor"></property>
+	</bean>
+
+	<bean name="noLockDBTaskExecutor"
+		class="com.techburg.autospring.db.task.impl.NoLockingDBTaskExecutorImpl">
 	</bean>
 
 </beans>

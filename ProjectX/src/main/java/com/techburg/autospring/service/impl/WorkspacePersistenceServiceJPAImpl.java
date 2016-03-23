@@ -33,12 +33,12 @@ public class WorkspacePersistenceServiceJPAImpl implements IWorkspacePersistence
 		mWorkspaceBo = workspaceBo;
 	}
 	
-	@Autowired
+	//Inject by ref attribute
 	public void setDBTaskExecutor(IDBTaskExecutor dbTaskExecutor) {
 		mDBTaskExecutor = dbTaskExecutor;
 	}
 	
-	@Autowired
+	//Inject by ref attribute
 	public void setBrowsingObjectPersistentService(IBrowsingObjectPersistentService browsingObjectPersistentService) {
 		mBrowsingObjectPersistentService = browsingObjectPersistentService;
 	}

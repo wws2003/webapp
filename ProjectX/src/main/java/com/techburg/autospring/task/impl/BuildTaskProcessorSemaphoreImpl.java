@@ -43,7 +43,7 @@ public class BuildTaskProcessorSemaphoreImpl implements IBuildTaskProcessor, Dis
 		mBuildInfoPersistenceService = buildInfoPersistenceService;
 	}
 	
-	@Autowired
+	//Inject by ref attribute
 	public void setBrowsingObjectPersistentService(IBrowsingObjectPersistentService browsingObjectPersistentService) {
 		mBrowsingObjectPersistentService = browsingObjectPersistentService;
 	}
@@ -201,13 +201,13 @@ public class BuildTaskProcessorSemaphoreImpl implements IBuildTaskProcessor, Dis
 		if(mBrowsingObjectPersistentService != null) {
 			if(workspace == null) {
 				//Entirely reconstruct DB
-				mBrowsingObjectPersistentService.removeBrowsingObjectInDirectory(null, true);
-				mBrowsingObjectPersistentService.persistBrowsingObjectInDirectory(null, true);
+				mBrowsingObjectPersistentService.removeBrowsingObjectInDirectory(null);
+				mBrowsingObjectPersistentService.persistBrowsingObjectInDirectory(null);
 			}
 			else {
 				//Partially reconstruct DB
-				mBrowsingObjectPersistentService.removeBrowsingObjectInDirectory(workspace.getDirectoryPath(), false);
-				mBrowsingObjectPersistentService.persistBrowsingObjectInDirectory(workspace.getDirectoryPath(), false);
+				mBrowsingObjectPersistentService.removeBrowsingObjectInDirectory(workspace.getDirectoryPath());
+				mBrowsingObjectPersistentService.persistBrowsingObjectInDirectory(workspace.getDirectoryPath());
 			}
 		}
 	}

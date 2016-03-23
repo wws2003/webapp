@@ -8,10 +8,10 @@ import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +25,7 @@ import com.techburg.autospring.model.business.BrowsingObject.OpenType;
 import com.techburg.autospring.service.abstr.IBrowsingObjectPersistentService;
 import com.techburg.autospring.util.FileUtil;
 
-@Controller
+@Controller(value="browsingController")
 public class BrowsingController {
 
 	private static final String gChildBrowsingObjectsAttribute = "childBrowsingObjects";
@@ -36,7 +36,7 @@ public class BrowsingController {
 
 	private IBrowsingObjectPersistentService mBrowsingPersistentService;
 
-	@Autowired
+	@Resource
 	public void setBrowsingObjectPersistentService(IBrowsingObjectPersistentService browsingService) {
 		mBrowsingPersistentService = browsingService;
 	}

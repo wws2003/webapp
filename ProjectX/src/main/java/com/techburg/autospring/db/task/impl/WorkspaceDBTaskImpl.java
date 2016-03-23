@@ -134,7 +134,7 @@ public class WorkspaceDBTaskImpl extends AbstractDBTask {
 			entityManager.detach(entity); //Do not need to manage this object longer !
 			entityManager.close();
 		}
-		return mParamBrowsingObjectPersistentService.persistBrowsingObjectInDirectory(workspace.getDirectoryPath(), true);
+		return mParamBrowsingObjectPersistentService.persistBrowsingObjectInDirectory(workspace.getDirectoryPath());
 	}
 
 	private int updateWorkspace(Workspace workspace) {

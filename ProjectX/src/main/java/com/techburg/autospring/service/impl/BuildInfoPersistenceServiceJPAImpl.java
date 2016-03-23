@@ -30,7 +30,7 @@ public class BuildInfoPersistenceServiceJPAImpl implements IBuildInfoPersistence
 		mBuildInfoBo = buildInfoBo;
 	}
 	
-	@Autowired
+	//Inject by ref attribute
 	public void setDBTaskExecutor(IDBTaskExecutor dbTaskExecutor) {
 		mDBTaskExecutor = dbTaskExecutor;
 	}

@@ -19,6 +19,7 @@ public class ThreadPoolDBTaskExecutorImpl extends ConcurrencyDBTaskExecutor {
 	@Override
 	public void handleCallableTask(Callable<Integer> callable,
 			AbstractDBTask dbTask) {
+		System.out.println("-----------I am ThreadPoolDBTaskExecutorImpl executor--------------");
 		Future<Integer> future = mExecutorService.submit(callable);
 
 		if(dbTask.getScheduleMode() == AbstractDBTask.SCHEDULE_SYNC_MODE) {

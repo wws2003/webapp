@@ -16,6 +16,6 @@ public interface IBrowsingObjectPersistentService {
 	
 	//TODO Refactor to eliminate parameter hasLockAcquired for clarity !
 	//Equivalently ensure hasLockAcquired must always be true/false
-	int persistBrowsingObjectInDirectory(String directoryPath, boolean hasLockAcquired);//if directory path = null -> persist from root path
-	int removeBrowsingObjectInDirectory(String directoryPath, boolean hasLockAcquired);//if directory path = null -> remove from root path
+	int persistBrowsingObjectInDirectory(String directoryPath);//if directory path = null -> persist from root path
+	int removeBrowsingObjectInDirectory(String directoryPath);//if directory path = null -> remove from root path
 }

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,7 +37,7 @@ import com.techburg.autospring.service.abstr.IWorkspacePersistenceService;
 import com.techburg.autospring.service.abstr.PersistenceResult;
 import com.techburg.autospring.util.FileUtil;
 
-@Controller
+@Controller(value = "workspaceController")
 public class WorkspaceController {
 	private static final String gWorkspaceListAttributeName = "workspaces";
 	private static final String gWorkspaceIdAttributeName = "workspaceId";
@@ -67,13 +69,13 @@ public class WorkspaceController {
 	}
 
 	@Autowired
-	public void setBrowsingObjectPersistentService(IBrowsingObjectPersistentService browsingObjectPersistentService) {
-		mBrowsingObjectPersistentService = browsingObjectPersistentService;
-	}
-
-	@Autowired
 	public void setWorkspaceFileSystemDelegate(IWorkspaceFileSystemDelegate workspaceFileSystemDelegate) {
 		mWorkspaceFileSystemDelegate = workspaceFileSystemDelegate;
+	}
+
+	@Resource
+	public void setBrowsingObjectPersistentService(IBrowsingObjectPersistentService browsingObjectPersistentService) {
+		mBrowsingObjectPersistentService = browsingObjectPersistentService;
 	}
 
 	//MARK: Controller methods
@@ -135,7 +137,7 @@ public class WorkspaceController {
 		model.addAttribute(gWorkspaceIdAttributeName, workspaceId);
 		return "workspacedetail";
 	}
-	
+
 	@RequestMapping(value="/workspace/browse/{workspaceId}", method=RequestMethod.GET)
 	public String browseWorkspace(Model model, @PathVariable long workspaceId) {
 		Workspace workspace = getWorkspacebyId(workspaceId);
@@ -147,7 +149,7 @@ public class WorkspaceController {
 		}
 		return createRenderPageForError(model, "Couldn't find workspace on the file system");
 	}
-	
+
 	@RequestMapping(value="/api/getPossibleBuildScripts/{workspaceId}", produces="application/json", method = RequestMethod.GET)
 	@ResponseBody 
 	public List<SimplifiedBrowsingObject> getPossibleBuildScripts(@PathVariable long workspaceId) {
@@ -157,7 +159,7 @@ public class WorkspaceController {
 			BrowsingObject workspaceRootBrowsingObject = mBrowsingObjectPersistentService.getBrowsingObjectByPath(workspace.getDirectoryPath());
 			List<BrowsingObject> childBrowsingObjects = new LinkedList<BrowsingObject>();
 			mBrowsingObjectPersistentService.getChildBrowsingObjects(workspaceRootBrowsingObject, childBrowsingObjects);
-			
+
 			for(BrowsingObject browsingObject : childBrowsingObjects) {
 				//FIXME: Possibly refactor to use separated filter
 				//Currently only deal with 1-level child files 
@@ -198,7 +200,7 @@ public class WorkspaceController {
 
 		return createRenderPageForNewWorkspace(model, newWorkspace);
 	}
-	
+
 	@RequestMapping(value="/workspace/create_github", method=RequestMethod.POST)
 	public String createNewWorkspaceFromGitHub(Model model, 
 			@RequestParam(value = "workspacename", required = true) String workspaceName,
@@ -236,9 +238,9 @@ public class WorkspaceController {
 		if(updatingWorkspace == null) {
 			return createRenderPageForError(model, "Workspace not found");
 		}
-		
+
 		modifyWorkspace(updatingWorkspace, workspaceDescription, buildScriptName);
-		
+
 		try {
 			postProcessWorkspaceModified(updatingWorkspace, buildScriptContent);
 			return "redirect:/workspace/detail/" + workspaceId;
@@ -276,7 +278,7 @@ public class WorkspaceController {
 			MultipartFile uploadedFile, 
 			boolean buildScriptDeferred, 
 			String buildScriptContent) throws Exception {
-		
+
 		AbstractWorkspaceCreateDelegate workspaceDelegate = getWorkspaceCreateDelegate(uploadedFile, 
 				buildScriptDeferred, 
 				buildScriptContent);
@@ -288,7 +290,7 @@ public class WorkspaceController {
 			throw e;
 		}
 	}
-	
+
 	private void modifyWorkspace(Workspace edittingWorkspace, 
 			String workspaceDescription, 
 			String buildScriptName) {
@@ -299,7 +301,7 @@ public class WorkspaceController {
 			edittingWorkspace.setScriptFilePath(edittingWorkspace.getDirectoryPath() + File.separator + buildScriptName);
 		}
 	}
-	
+
 	private void postProcessWorkspaceModified(Workspace workspace, String buildScriptContent) throws Exception {
 		AbstractWorkspaceModifyDelegate workspaceDelegate = getWorkspaceUpdateDelegate(buildScriptContent);
 		try {
@@ -309,7 +311,7 @@ public class WorkspaceController {
 			throw e;
 		}
 	}
-	
+
 	//MARK: Method to generate proper delegate
 	private AbstractWorkspaceCreateDelegate getWorkspaceCreateDelegate(MultipartFile file, 
 			boolean deferredBuildScript, 
@@ -330,7 +332,7 @@ public class WorkspaceController {
 		}
 		return buildScriptDelegate;
 	}
-	
+
 	private AbstractWorkspaceModifyDelegate getWorkspaceUpdateDelegate(String buildScriptContent) {
 		AbstractWorkspaceModifyDelegate buildScriptSavingDelegate = new BuildScriptSavingWorkspaceModifyDelegateImpl(mWorkspaceFileSystemDelegate, buildScriptContent);
 		AbstractWorkspaceModifyDelegate persistingDelegate = new PersistingWorkspaceModifyDelegateImpl(mWorkspacePersistenceService, mBrowsingObjectPersistentService);

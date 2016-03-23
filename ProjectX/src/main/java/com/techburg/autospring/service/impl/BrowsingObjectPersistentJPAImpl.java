@@ -10,7 +10,6 @@ import com.techburg.autospring.bo.abstr.IBrowsingObjectBo;
 import com.techburg.autospring.db.task.abstr.AbstractDBTask;
 import com.techburg.autospring.db.task.abstr.IDBTaskExecutor;
 import com.techburg.autospring.db.task.impl.BrowsingObjectDBTaskImpl;
-import com.techburg.autospring.db.task.impl.NoLockingDBTaskExecutorImpl;
 import com.techburg.autospring.model.business.BrowsingObject;
 import com.techburg.autospring.service.abstr.IBrowsingObjectPersistentService;
 import com.techburg.autospring.service.abstr.IBrowsingServiceDelegate;
@@ -37,7 +36,7 @@ public class BrowsingObjectPersistentJPAImpl implements IBrowsingObjectPersisten
 		mBrowsingServiceDelegate = browsingServiceDelegate;
 	}
 	
-	@Autowired
+	//Inject by ref attribute
 	public void setDBTaskExecutor(IDBTaskExecutor dbTaskExecutor) {
 		mDBTaskExecutor = dbTaskExecutor;
 	}
@@ -88,13 +87,13 @@ public class BrowsingObjectPersistentJPAImpl implements IBrowsingObjectPersisten
 	}
 
 	@Override
-	public int persistBrowsingObjectInDirectory(String directoryPath, boolean hasLockAcquired) {
-		return mBrowsingServiceDelegate.persistBrowsingObjectInDirectory(directoryPath, hasLockAcquired ? getLockFreePersistenceService() : this);
+	public int persistBrowsingObjectInDirectory(String directoryPath) {
+		return mBrowsingServiceDelegate.persistBrowsingObjectInDirectory(directoryPath, this);
 	}
 
 	@Override
-	public int removeBrowsingObjectInDirectory(String directoryPath, boolean hasLockAcquired) {
-		return mBrowsingServiceDelegate.removeBrowsingObjectInDirectory(directoryPath, hasLockAcquired ? getLockFreePersistenceService() : this);
+	public int removeBrowsingObjectInDirectory(String directoryPath) {
+		return mBrowsingServiceDelegate.removeBrowsingObjectInDirectory(directoryPath, this);
 	}
 
 	@Override
@@ -104,13 +103,6 @@ public class BrowsingObjectPersistentJPAImpl implements IBrowsingObjectPersisten
 		removeTask.setScheduleMode(AbstractDBTask.SCHEDULE_SYNC_MODE);
 		mDBTaskExecutor.executeDBTask(removeTask);
 		return removeTask.getRemoveByIdResult();
-	}
-	
-	private IBrowsingObjectPersistentService getLockFreePersistenceService() {
-		BrowsingObjectPersistentJPAImpl instance = new BrowsingObjectPersistentJPAImpl(mEntityManagerFactory);
-		instance.setBuildInfoBo(mBrowsingObjectBo);
-		instance.setDBTaskExecutor(new NoLockingDBTaskExecutorImpl());
-		return instance;
 	}
 
 }
