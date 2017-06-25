@@ -30,7 +30,7 @@
 			</div>
 		</div>
 	</div>
-	<script type="text/javascript" src="<c:url value='/resources/js/jquery-1.9.0.min.js'></c:url>"></script>
+	<script type="text/javascript" src="<c:url value='/resources/asset/jquery/jquery-1.9.1.min.js'></c:url>"></script>
 	<script type="text/javascript" src="<c:url value='/resources/js/buildstream.js'></c:url>"></script>
 	<script type="text/javascript">
 		refreshBuildStreamContent(<c:out value="${param['workspaceid']}"></c:out>);

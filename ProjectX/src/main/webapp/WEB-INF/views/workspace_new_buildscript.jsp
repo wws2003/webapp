@@ -5,7 +5,7 @@
 	<link rel="stylesheet" type="text/css" href="<c:url value='/resources/css/common.css'></c:url>"></link>
 	<link rel="stylesheet" type="text/css" href="<c:url value='/resources/css/input.css'></c:url>"></link>
 	<link rel="stylesheet" type="text/css" href="<c:url value='/resources/css/workspace_new_buildscript.css'></c:url>"></link>
-	<script type="text/javascript" src="<c:url value='/resources/js/jquery-1.9.0.min.js'></c:url>"></script>
+	<script type="text/javascript" src="<c:url value='/resources/asset/jquery/jquery-1.9.1.min.js'></c:url>"></script>
 	<script type="text/javascript" src="<c:url value='/resources/js/workspace_new_buildscript.js'></c:url>"></script>
 </head>
 <style type="text/css">

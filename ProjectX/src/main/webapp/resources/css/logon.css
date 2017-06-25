@@ -1,0 +1,9 @@
+@CHARSET "UTF-8";
+
+form.lo_logon_form {
+	width: 50%;
+	margin: 15px auto;
+	padding: 50px;
+	border: 2px solid lightgray;
+	background-color: white;
+}
