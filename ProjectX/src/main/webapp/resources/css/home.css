@@ -1,3 +1,7 @@
+main>section:first-child>article {
+	padding-top: 15px !important
+}
+
 div.vertical-explanation {
 	margin: 30px auto;
 	visibility: hidden;

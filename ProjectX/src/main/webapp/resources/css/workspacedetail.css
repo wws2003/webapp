@@ -1,0 +1,23 @@
+@CHARSET "UTF-8";
+.round-buttons-line {
+	margin: 0 auto;
+	width: 70%;
+}
+
+.round-button {
+	width:26%;
+	display: inline-block;
+	margin:0 10px 0 10px;
+}
+
+.round-button-circle {
+    background: #81BEF7;
+}
+
+.round-button:hover {
+    
+}
+
+.round-button-circle:hover {
+	background: #819FF7;
+}

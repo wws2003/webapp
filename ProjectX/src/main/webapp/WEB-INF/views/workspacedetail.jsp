@@ -1,71 +1,83 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="hpgTag"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" type="text/css"
-	href="<c:url value='/resources/css/common.css'></c:url>"></link>
-<link rel="stylesheet" type="text/css"
-	href="<c:url value='/resources/css/round-button.css'></c:url>"></link>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<%-- Common resources --%>
+<%@ include file="commonHeader.jsp"%>
+<%-- Page CSS --%>
+<link rel="stylesheet" type="text/css" href="<c:url value='/resources/css/round-button.css'></c:url>"></link>
+<link rel="stylesheet" type="text/css" href="<c:url value='/resources/css/workspacedetail.css'></c:url>"></link>
+<%-- Page JS --%>
+<title>Workspace details</title>
 </head>
-<style type="text/css">
-.round-buttons-line {
-	margin: 0 auto;
-	width: 70%;
-}
-
-.round-button {
-	width:26%;
-	display: inline-block;
-	margin:0 10px 0 10px;
-}
-
-.round-button-circle {
-    background: #81BEF7;
-}
-
-.round-button:hover {
-    
-}
-
-.round-button-circle:hover {
-	background: #819FF7;
-}
-
-</style>
 <body>
-	<div class="container">
-		<div class="sidebar"></div>
-		<div class="container_header">Simplest CI !</div>
+	<hpgTag:frame>
+		<%-- Breadcrumb --%>
+		<ol class="breadcrumb">
+			<li><a href='<c:url value="/home"></c:url>'>Home</a></li>
+			<li><a href='<c:url value="/workspace/list"></c:url>'>Workspace list</a></li>
+			<li class="breadcrumb-item active">Workspace info</li>
+		</ol>
+		<%-- Content --%>
 		<div class="main_content">
-			<div>
-				<h4><b>Workspace description</b></h4>
-				<p>${workspaceDescription}</p>
-				<h4><b>Workspace status</b></h4>
-				<p>Coming soon...</p>
-			</div>
-			<div class="round-buttons-div">
-				<div class="round-buttons-line">
-					<div class="round-button">
-	    				<div class="round-button-circle"><a href="<c:url value="/workspace/browse/${workspaceId}"></c:url>" >Browse workspace</a>
-	    				</div>
+			<%-- Workspace basic info --%>
+			<%-- Description --%>
+			<div class="panel-group">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h4 class="panel-title">
+							<a data-toggle="collapse" href="#collapse1">Workspace description</a>
+						</h4>
 					</div>
-					<div class="round-button">
-	    				<div class="round-button-circle"><a href="<c:url value="/buildlist/${workspaceId}/"></c:url>" >Build list</a>
-	    				</div>
-					</div>
-					<div class="round-button">
-	    				<div class="round-button-circle"><a href="<c:url value="/testbuild/${workspaceId}/5"></c:url>" >Test build</a>
-	    				</div>
+					<div id="collapse1" class="panel-collapse collapse in">
+						<div class="panel-body">
+							<p>${workspaceDescription}</p>
+							<p>
+								<a href='<c:url value="/workspace/edit/${workspaceId}"></c:url>'>Edit</a>
+							</p>
+						</div>
 					</div>
 				</div>
 			</div>
-			<div class="container-footer">
-				<a href='<c:url value="/workspace/edit/${workspaceId}"></c:url>'>Edit workspace</a>
-		&nbsp;&nbsp;&nbsp;
-				<a href='<c:url value="/workspace/list"></c:url>'>To workspace list</a>
-		&nbsp;&nbsp;&nbsp;
-				<a href='<c:url value="/home"></c:url>'>To home page</a>
+			<%-- Status (not available yet) --%>
+			<div class="panel-group">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h4 class="panel-title">
+							<a data-toggle="collapse" href="#collapse2">Workspace status</a>
+						</h4>
+					</div>
+					<div id="collapse2" class="panel-collapse collapse in">
+						<div class="panel-body">
+							<p>Coming soon...</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<%-- Action menu --%>
+			<div class="round-buttons-div">
+				<div class="round-buttons-line">
+					<div class="round-button">
+						<div class="round-button-circle">
+							<a href="<c:url value="/workspace/browse/${workspaceId}"></c:url>">Browse workspace</a>
+						</div>
+					</div>
+					<div class="round-button">
+						<div class="round-button-circle">
+							<a href="<c:url value="/buildlist/${workspaceId}/"></c:url>">Build list</a>
+						</div>
+					</div>
+					<div class="round-button">
+						<div class="round-button-circle">
+							<a href="<c:url value="/testbuild/${workspaceId}/5"></c:url>">Test build</a>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
-	</div>
+	</hpgTag:frame>
 </body>
 </html>

@@ -20,16 +20,20 @@ body>header {
 body>footer {
 	position: fixed;
 	font-size: 13px;
-	padding: 2px;
-	text-align: right;
+	padding: 2px 15px;
 	background-color: lightblue;
 	width: 100%;
 	bottom: 0px
 }
 
+body>footer>span:nth-child(2){
+	float: right
+}
+
+/*Main area*/
 main {
 	width: 100%;
-	margin: 0px	!important;
+	margin: 0px !important;
 	background-color: azure
 }
 
@@ -44,4 +48,11 @@ main>section:first-child>aside {
 
 main>section:first-child>article {
 	overflow-y: scroll
+}
+
+main>section:first-child>article>.breadcrumb:first-child {
+	background: transparent;
+    border-bottom: 1px solid #81BEF7;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
 }
