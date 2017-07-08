@@ -1,4 +1,4 @@
-package com.techburg.autospring.model;
+package com.techburg.autospring.model.query;
 
 
 public class BuildInfoPersistenceQuery extends BasePersistenceQuery {

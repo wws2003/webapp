@@ -2,8 +2,8 @@ package com.techburg.autospring.service.abstr;
 
 import java.util.List;
 
-import com.techburg.autospring.model.BuildInfoPersistenceQuery;
 import com.techburg.autospring.model.business.BuildInfo;
+import com.techburg.autospring.model.query.BuildInfoPersistenceQuery;
 
 public interface IBuildInfoPersistenceService {
 	public int persistBuildInfo(BuildInfo buildInfo);

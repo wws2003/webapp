@@ -3,7 +3,8 @@
 <%-- Header --%>
 <header> Simplest CI </header>
 <%-- Main --%>
-<main class="row"> <%-- Main section --%>
+<main class="row"> 
+<%-- Main section --%>
 <section class="col-xs-12">
 	<%-- Left side bar --%>
 	<aside class="col-xs-1"></aside>
@@ -15,5 +16,6 @@
 </main>
 <%-- Footer --%>
 <footer>
-	<span> TBC-HPG&copy;2017 </span> <span> <a href='#'>Sitemap</a> </span>
+	<span> TBC-HPG&copy;2017 </span> <span> <a href='#'>Sitemap</a>
+	</span>
 </footer>

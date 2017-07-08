@@ -11,10 +11,10 @@ import javax.persistence.Query;
 
 import com.techburg.autospring.bo.abstr.IWorkspaceBo;
 import com.techburg.autospring.db.task.abstr.AbstractDBTask;
-import com.techburg.autospring.model.BasePersistenceQuery.DataRange;
-import com.techburg.autospring.model.WorkspacePersistenceQuery;
 import com.techburg.autospring.model.business.Workspace;
 import com.techburg.autospring.model.entity.WorkspaceEntity;
+import com.techburg.autospring.model.query.WorkspacePersistenceQuery;
+import com.techburg.autospring.model.query.BasePersistenceQuery.DataRange;
 import com.techburg.autospring.service.abstr.IBrowsingObjectPersistentService;
 import com.techburg.autospring.service.abstr.PersistenceResult;
 

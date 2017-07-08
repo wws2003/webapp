@@ -16,10 +16,7 @@
 <body>
 	<hpgTag:frame>
 		<%-- Breadcrumb --%>
-		<ol class="breadcrumb">
-			<li><a href='<c:url value="/home"></c:url>'>Home</a></li>
-			<li class="breadcrumb-item active">New workspace from GitHub</li>
-		</ol>
+		<hpgTag:breadcrumb bc1="/home,Home,false,1" bc2="/,New workspace from GitHub,true,2"/>
 		<%--Content --%>
 		<div class="main_content input_container">
 			<form action='<c:url value="/workspace/create_github"></c:url>' method="POST">

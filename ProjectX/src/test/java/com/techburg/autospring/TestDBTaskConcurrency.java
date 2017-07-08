@@ -16,9 +16,9 @@ import com.techburg.autospring.bo.abstr.IBuildInfoBo;
 import com.techburg.autospring.db.task.abstr.AbstractDBTask;
 import com.techburg.autospring.db.task.abstr.IDBTaskExecutor;
 import com.techburg.autospring.db.task.impl.BuildInfoDBTaskImpl;
-import com.techburg.autospring.model.BasePersistenceQuery.DataRange;
-import com.techburg.autospring.model.BuildInfoPersistenceQuery;
 import com.techburg.autospring.model.business.BuildInfo;
+import com.techburg.autospring.model.query.BuildInfoPersistenceQuery;
+import com.techburg.autospring.model.query.BasePersistenceQuery.DataRange;
 
 public class TestDBTaskConcurrency {
 

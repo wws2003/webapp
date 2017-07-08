@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.techburg.autospring.factory.abstr.IBuildTaskFactory;
-import com.techburg.autospring.model.BasePersistenceQuery.DataRange;
-import com.techburg.autospring.model.BuildInfoPersistenceQuery;
-import com.techburg.autospring.model.BuildInfoPersistenceQuery.BuildInfoDataRange;
-import com.techburg.autospring.model.WorkspacePersistenceQuery;
 import com.techburg.autospring.model.business.BuildInfo;
 import com.techburg.autospring.model.business.BuiltInfoPage;
 import com.techburg.autospring.model.business.Workspace;
+import com.techburg.autospring.model.query.BuildInfoPersistenceQuery;
+import com.techburg.autospring.model.query.WorkspacePersistenceQuery;
+import com.techburg.autospring.model.query.BasePersistenceQuery.DataRange;
+import com.techburg.autospring.model.query.BuildInfoPersistenceQuery.BuildInfoDataRange;
 import com.techburg.autospring.service.abstr.IBuildDataService;
 import com.techburg.autospring.service.abstr.IBuildInfoPersistenceService;
 import com.techburg.autospring.service.abstr.IBuildStreamService;

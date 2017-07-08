@@ -16,11 +16,7 @@
 <body>
 	<hpgTag:frame>
 		<%-- Breadcrumb --%>
-		<ol class="breadcrumb">
-			<li><a href='<c:url value="/home"></c:url>'>Home</a></li>
-			<li><a href='<c:url value="/workspace/list"></c:url>'>Workspace list</a></li>
-			<li class="breadcrumb-item active">Workspace info</li>
-		</ol>
+		<hpgTag:breadcrumb bc1="/home,Home,false,1" bc2="/workspace/list,Workspace list,false,2" bc3="/,Workspace info,true,3"/>
 		<%-- Content --%>
 		<div class="main_content">
 			<%-- Workspace basic info --%>

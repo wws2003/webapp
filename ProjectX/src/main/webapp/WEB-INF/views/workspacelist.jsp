@@ -15,10 +15,7 @@
 <body>
 	<hpgTag:frame>
 		<%-- Breadcrumb --%>
-		<ol class="breadcrumb">
-			<li><a href='<c:url value="/home"></c:url>'>Home</a></li>
-			<li class="breadcrumb-item active">Workspace list</li>
-		</ol>
+		<hpgTag:breadcrumb bc1="/home,Home,false,1" bc2="/,Workspace list,true,2" />
 		<%-- Content --%>
 		<div class="main_content">
 			<c:forEach items="${workspaces}" var="element">

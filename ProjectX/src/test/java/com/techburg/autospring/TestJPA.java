@@ -14,10 +14,10 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.techburg.autospring.model.BasePersistenceQuery.DataRange;
-import com.techburg.autospring.model.BuildInfoPersistenceQuery;
 import com.techburg.autospring.model.business.BuildInfo;
 import com.techburg.autospring.model.business.BuildInfo.Status;
+import com.techburg.autospring.model.query.BuildInfoPersistenceQuery;
+import com.techburg.autospring.model.query.BasePersistenceQuery.DataRange;
 import com.techburg.autospring.service.abstr.IBuildInfoPersistenceService;
 import com.techburg.autospring.service.abstr.PersistenceResult;
 

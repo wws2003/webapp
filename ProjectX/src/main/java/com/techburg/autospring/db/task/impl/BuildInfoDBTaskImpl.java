@@ -11,10 +11,10 @@ import javax.persistence.Query;
 
 import com.techburg.autospring.bo.abstr.IBuildInfoBo;
 import com.techburg.autospring.db.task.abstr.AbstractDBTask;
-import com.techburg.autospring.model.BuildInfoPersistenceQuery;
-import com.techburg.autospring.model.BuildInfoPersistenceQuery.BuildInfoDataRange;
 import com.techburg.autospring.model.business.BuildInfo;
 import com.techburg.autospring.model.entity.BuildInfoEntity;
+import com.techburg.autospring.model.query.BuildInfoPersistenceQuery;
+import com.techburg.autospring.model.query.BuildInfoPersistenceQuery.BuildInfoDataRange;
 import com.techburg.autospring.service.abstr.PersistenceResult;
 
 public class BuildInfoDBTaskImpl extends AbstractDBTask {

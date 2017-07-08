@@ -25,13 +25,13 @@ import com.techburg.autospring.delegate.impl.BuildScriptWorkspaceCreateDelegateI
 import com.techburg.autospring.delegate.impl.FileUploadWorkspaceCreateDelegateImpl;
 import com.techburg.autospring.delegate.impl.PersistingWorkspaceModifyDelegateImpl;
 import com.techburg.autospring.factory.abstr.IWorkspaceFactory;
-import com.techburg.autospring.model.BasePersistenceQuery.DataRange;
-import com.techburg.autospring.model.WorkspacePersistenceQuery;
 import com.techburg.autospring.model.business.BrowsingObject;
 import com.techburg.autospring.model.business.BrowsingObject.ObjectType;
 import com.techburg.autospring.model.business.BrowsingObject.OpenType;
 import com.techburg.autospring.model.business.Workspace;
 import com.techburg.autospring.model.entity.SimplifiedBrowsingObject;
+import com.techburg.autospring.model.query.WorkspacePersistenceQuery;
+import com.techburg.autospring.model.query.BasePersistenceQuery.DataRange;
 import com.techburg.autospring.service.abstr.IBrowsingObjectPersistentService;
 import com.techburg.autospring.service.abstr.IWorkspacePersistenceService;
 import com.techburg.autospring.service.abstr.PersistenceResult;
