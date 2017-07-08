@@ -16,19 +16,17 @@
 <body>
 	<hpgTag:frame>
 		<%-- Breadcrumb --%>
-		<ol class="breadcrumb">
-			<li><a href='<c:url value="/home"></c:url>'>Home</a></li>
-			<c:choose>
-				<c:when test="${empty edittingWorkspace}">
-					<li class="breadcrumb-item active">New workspace</li>
-				</c:when>
-				<c:otherwise>
-					<li><a href='<c:url value="/workspace/list"></c:url>'>Workspace list</a></li>
-					<li><a href='<c:url value="/workspace/detail/${edittingWorkspace.id}"></c:url>'>Workspace info</a></li>
-					<li class="breadcrumb-item active">Editing</li>
-				</c:otherwise>
-			</c:choose>
-		</ol>
+		<c:set var="homePath" value="/home,Home,false,1"></c:set>
+		<c:choose>
+			<c:when test="${empty edittingWorkspace}">
+				<hpgTag:breadcrumb bc1="${homePath}" bc2="/,New workspace,true,2" />
+			</c:when>
+			<c:otherwise>
+				<hpgTag:breadcrumb bc1="${homePath}" bc2="/workspace/list,Workspace list,false,2" bc3="/workspace/detail/${edittingWorkspace.id},Workspace info,false,3"
+					bc4="/,Editing,true,4"
+				/>
+			</c:otherwise>
+		</c:choose>
 		<%-- Content --%>
 		<div class="main_content input_container">
 			<form
