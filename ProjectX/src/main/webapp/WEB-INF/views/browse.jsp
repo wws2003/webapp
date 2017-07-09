@@ -15,12 +15,9 @@
 <body>
 	<hpgTag:frame>
 		<%-- Breadcrumb --%>
-		<ol class="breadcrumb">
-			<li><a href='<c:url value="/home"></c:url>'>Home</a></li>
-			<li><a href='<c:url value="/workspace/list"></c:url>'>Workspace list</a></li>
-			<li><a href='#'>TODO Workspace info</a></li>
-			<li class="breadcrumb-item active">Browsing</li>
-		</ol>
+		<hpgTag:breadcrumb bc1="/home,Home,false,1" bc2="/workspace/list,Workspace list,false,2" bc3="/workspace/detail/${workspaceId},Workspace info,false,3"
+			bc4="/,Browsing,true,4"
+		/>
 		<%-- Content --%>
 		<div class="main_content">
 			<c:choose>
@@ -37,10 +34,10 @@
 									<tr>
 										<c:choose>
 											<c:when test="${element.objectType == 0}">
-												<td style="text-align: left;">---------------<a href="<c:url value="/open/${element.id}"></c:url>">${element.name}</a></td>
+												<td style="text-align: left;">---------------<a href="<c:url value="/open/${workspaceId}/${element.id}"></c:url>">${element.name}</a></td>
 											</c:when>
 											<c:otherwise>
-												<td style="text-align: left;"><a href="<c:url value="/browse/${element.id}"></c:url>">${element.name}</a>/</td>
+												<td style="text-align: left;"><a href="<c:url value="/browse/${workspaceId}/${element.id}"></c:url>">${element.name}</a>/</td>
 											</c:otherwise>
 										</c:choose>
 										<td>${element.modifiedTime}</td>

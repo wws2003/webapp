@@ -4,11 +4,10 @@ import com.techburg.autospring.bo.abstr.IBrowsingObjectBo;
 import com.techburg.autospring.model.business.BrowsingObject;
 import com.techburg.autospring.model.entity.BrowsingObjectEntity;
 
-public class BrowsingObjectBoImpl implements IBrowsingObjectBo{
+public class BrowsingObjectBoImpl implements IBrowsingObjectBo {
 
 	@Override
-	public BrowsingObject getBusinessObjectFromEntity(
-			BrowsingObjectEntity entity) {
+	public BrowsingObject getBusinessObjectFromEntity(BrowsingObjectEntity entity) {
 		BrowsingObject browsingObject = new BrowsingObject();
 		browsingObject.setAbsolutePath(entity.getAbsolutePath());
 		browsingObject.setId(entity.getId());
@@ -16,17 +15,18 @@ public class BrowsingObjectBoImpl implements IBrowsingObjectBo{
 		browsingObject.setObjectType(entity.getObjectType());
 		browsingObject.setOpenType(entity.getOpenType());
 		BrowsingObject browsingObjectParent = null;
-		if(entity.getParent() != null) {
+		if (entity.getParent() != null) {
+			BrowsingObjectEntity parentEntity = entity.getParent();
 			browsingObjectParent = new BrowsingObject();
-			browsingObjectParent.setId(entity.getParent().getId());
+			browsingObjectParent.setId(parentEntity.getId());
+			browsingObjectParent.setAbsolutePath(parentEntity.getAbsolutePath());
 		}
 		browsingObject.setParent(browsingObjectParent);
 		return browsingObject;
 	}
 
 	@Override
-	public BrowsingObjectEntity getEntityFromBusinessObject(
-			BrowsingObject browsingObject) {
+	public BrowsingObjectEntity getEntityFromBusinessObject(BrowsingObject browsingObject) {
 		BrowsingObjectEntity entity = new BrowsingObjectEntity();
 		entity.setAbsolutePath(browsingObject.getAbsolutePath());
 		entity.setId(browsingObject.getId());
@@ -34,7 +34,7 @@ public class BrowsingObjectBoImpl implements IBrowsingObjectBo{
 		entity.setObjectType(browsingObject.getObjectType());
 		entity.setOpenType(browsingObject.getOpenType());
 		BrowsingObjectEntity entityParent = null;
-		if(browsingObject.getParent() != null) {
+		if (browsingObject.getParent() != null) {
 			entityParent = new BrowsingObjectEntity();
 			entityParent.setId(browsingObject.getParent().getId());
 		}

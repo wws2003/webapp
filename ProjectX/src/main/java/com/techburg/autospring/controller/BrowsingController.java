@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,6 +28,7 @@ import com.techburg.autospring.util.FileUtil;
 @Controller(value = "browsingController")
 public class BrowsingController {
 
+	private static final String gWorkspaceId = "workspaceId";
 	private static final String gChildBrowsingObjectsAttribute = "childBrowsingObjects";
 	private static final String gBrowsingObjectPathAttribute = "browsingObjectPath";
 	private static final String gIsFileObjectAttribute = "isFileObject";
@@ -42,8 +42,8 @@ public class BrowsingController {
 		mBrowsingPersistentService = browsingService;
 	}
 
-	@RequestMapping(value = "/browse/{id}", method = RequestMethod.GET)
-	public String browse(@PathVariable long id, Model model) throws Exception {
+	@RequestMapping(value = "/browse/{workspaceId}/{id}", method = RequestMethod.GET)
+	public String browse(@PathVariable long workspaceId, @PathVariable long id, Model model) throws Exception {
 		String browsePage = "browse";
 		String waitPage = "wait";
 
@@ -54,12 +54,8 @@ public class BrowsingController {
 		try {
 			BrowsingObject browsingObject = mBrowsingPersistentService.getBrowsingObjectById(id);
 			if (browsingObject != null) {
-				// TEST
-				List<BrowsingObject> fullBrowsingPath = getFullBrowsingPath(browsingObject);
-				for (BrowsingObject bro : fullBrowsingPath) {
-					System.out.println("-------------Browsing object id: " + bro.getId() + "-------------------");
-				}
-
+				// Put to model info attributes
+				model.addAttribute(gWorkspaceId, workspaceId);
 				model.addAttribute(gBrowsingObjectPathAttribute, browsingObject.getAbsolutePath());
 				model.addAttribute(gIsFileObjectAttribute, browsingObject.getObjectType() == ObjectType.TYPE_FILE);
 
@@ -87,8 +83,8 @@ public class BrowsingController {
 		return browsePage;
 	}
 
-	@RequestMapping(value = "/open/{id}", method = RequestMethod.GET)
-	public String openObject(@PathVariable long id, Model model) throws Exception {
+	@RequestMapping(value = "/open/{workspaceId}/{id}", method = RequestMethod.GET)
+	public String openObject(@PathVariable long workspaceId, @PathVariable long id, Model model) throws Exception {
 		String openPage = "open";
 		String waitPage = "wait";
 
@@ -99,11 +95,16 @@ public class BrowsingController {
 		try {
 			BrowsingObject browsingObject = mBrowsingPersistentService.getBrowsingObjectById(id);
 			if (browsingObject != null && browsingObject.getOpenType() == OpenType.OPEN_BY_BROWSER) {
+				// Try to put workspace id into model
+				model.addAttribute(gWorkspaceId, workspaceId);
+
+				// Open the browsing file content on browser directly
 				FileUtil util = new FileUtil();
 				String objectContent = util.getStringFromFile(browsingObject.getAbsolutePath());
 				model.addAttribute(gObjectContentAttribute, objectContent);
 				model.addAttribute(gObjectCanOpened, true);
 			} else {
+				// Download the file
 				return "redirect:/download/" + id;
 			}
 		} catch (Exception e) {
@@ -160,22 +161,5 @@ public class BrowsingController {
 				}
 			}
 		}
-	}
-
-	/*-----------------------------------------Below are private methods-----------------------------------------*/
-	/**
-	 * Get the full browsing object path to the specified browsing object
-	 * 
-	 * @param browsingObject
-	 * @return
-	 */
-	private List<BrowsingObject> getFullBrowsingPath(BrowsingObject browsingObject) {
-		List<BrowsingObject> path = new ArrayList<BrowsingObject>();
-		BrowsingObject currentBrowsingObject = browsingObject;
-		while (currentBrowsingObject != null) {
-			path.add(currentBrowsingObject);
-			currentBrowsingObject = currentBrowsingObject.getParent();
-		}
-		return path;
 	}
 }

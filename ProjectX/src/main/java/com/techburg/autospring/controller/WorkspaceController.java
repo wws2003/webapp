@@ -143,7 +143,7 @@ public class WorkspaceController {
 			BrowsingObject workspaceRootBrowsingObject = mBrowsingObjectPersistentService.getBrowsingObjectByPath(workspace
 					.getDirectoryPath());
 			if (workspaceRootBrowsingObject != null) {
-				return "redirect:/browse/" + workspaceRootBrowsingObject.getId();
+				return "redirect:/browse/" + workspaceId + "/" + workspaceRootBrowsingObject.getId();
 			}
 		}
 		return createRenderPageForError(model, "Couldn't find workspace on the file system");
@@ -161,7 +161,7 @@ public class WorkspaceController {
 			mBrowsingObjectPersistentService.getChildBrowsingObjects(workspaceRootBrowsingObject, childBrowsingObjects);
 
 			for (BrowsingObject browsingObject : childBrowsingObjects) {
-				// FIXME: Possibly refactor to use separated filter
+				// FIXME: Possibly refactoring to use separated filter
 				// Currently only deal with 1-level child files
 				if (browsingObject.getObjectType() == ObjectType.TYPE_FILE
 						&& browsingObject.getOpenType() == OpenType.OPEN_BY_BROWSER) {
