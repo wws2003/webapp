@@ -8,9 +8,38 @@ public class BasePersistenceQuery {
 		public static final int LIMITED_MATCH = 3;
 		public static final int ID_MATCH = 4;
 	}
-	
-	public int dataRange;
-	public long id;
-	public long firstId;
-	public long lastId;
+
+	protected int dataRange;
+	protected long id;
+	protected long firstId;
+	protected long lastId;
+
+	/**
+	 * @return the dataRange
+	 */
+	public int getDataRange() {
+		return dataRange;
+	}
+
+	/**
+	 * @return the id
+	 */
+	public long getId() {
+		return id;
+	}
+
+	/**
+	 * @return the firstId
+	 */
+	public long getFirstId() {
+		return firstId;
+	}
+
+	/**
+	 * @return the lastId
+	 */
+	public long getLastId() {
+		return lastId;
+	}
+
 }

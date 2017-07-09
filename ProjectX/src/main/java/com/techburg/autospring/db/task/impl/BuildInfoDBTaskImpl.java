@@ -28,13 +28,13 @@ public class BuildInfoDBTaskImpl extends AbstractDBTask {
 	private IBuildInfoBo mBuildInfoBo = null;
 	private EntityManagerFactory mEntityManagerFactory = null;
 
-	//parameters set from outside
+	// parameters set from outside
 	private BuildInfo mParamBuildInfoToPersist = null;
 	private BuildInfoPersistenceQuery mParamBuildInfoLoadQuery = null;
 	private long mParamIdForRemove = -1;
 	private long mParamWorkspaceId = -1;
 
-	//Results calculated by execute()
+	// Results calculated by execute()
 	private int mResultForPersist = -1;
 	private int mResultForLoad = -1;
 	private int mResultForRemove = -1;
@@ -117,15 +117,14 @@ public class BuildInfoDBTaskImpl extends AbstractDBTask {
 		tx.begin();
 		try {
 			entityManager.persist(entity);
-			entityManager.detach(entity); //Do not need to manage this object longer !
+			entityManager.detach(entity); // Do not need to manage this object
+											// longer !
 			tx.commit();
-		}
-		catch (PersistenceException pe) {
+		} catch (PersistenceException pe) {
 			pe.printStackTrace();
 			tx.rollback();
 			return PersistenceResult.PERSISTENCE_FAILED;
-		}
-		finally {
+		} finally {
 			entityManager.close();
 		}
 		return PersistenceResult.PERSISTENCE_SUCCESSFUL;
@@ -137,53 +136,13 @@ public class BuildInfoDBTaskImpl extends AbstractDBTask {
 		EntityManager entityManager = mEntityManagerFactory.createEntityManager();
 		StringBuilder queryStringBuilder = new StringBuilder();
 
-		switch (query.dataRange) {
+		switch (query.getDataRange()) {
 		case BuildInfoDataRange.ALL:
 			queryStringBuilder.setLength(0);
 			queryStringBuilder.append("select * from build_info");
 
-			if(query.workspace > 0) {
-				queryStringBuilder.append(" where workspace_id = ")
-				.append(query.workspace);
-			}
-
-			loadQuery = entityManager.createNativeQuery(queryStringBuilder.toString(), BuildInfoEntity.class);
-			try {
-				@SuppressWarnings("unchecked")
-				List<BuildInfoEntity> entities = loadQuery.getResultList();
-				for(BuildInfoEntity entity : entities) {
-					entityManager.detach(entity);
-					buildInfoList.add(mBuildInfoBo.getBusinessObjectFromEntity(entity));
-				}
-				return PersistenceResult.LOAD_SUCCESSFUL;
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				return PersistenceResult.INVALID_QUERY;
-			}
-		case BuildInfoDataRange.PAGE_MATCH:
-			int page = query.page;
-			int nbPage = query.nbInstancePerPage;
-
-			queryStringBuilder.append("select * from ")
-			.append("(")
-			.append("select * from build_info ")
-			.append("where workspace_id = ")
-			.append(query.workspace)
-			.append(" order by id desc ")
-			.append("limit ")
-			.append(page * nbPage)
-			.append(") ");
-
-			if(page > 1) {
-				queryStringBuilder.append("where id < ")
-				.append("(")
-				.append("select min(id) from (select id from build_info")
-				.append(" where workspace_id = ")						
-				.append(query.workspace)
-				.append(" order by id desc limit ") 
-				.append((page - 1) * nbPage)
-				.append("))");
+			if (query.getWorkspaceId() > 0) {
+				queryStringBuilder.append(" where workspace_id = ").append(query.getWorkspaceId());
 			}
 
 			loadQuery = entityManager.createNativeQuery(queryStringBuilder.toString(), BuildInfoEntity.class);
@@ -195,48 +154,65 @@ public class BuildInfoDBTaskImpl extends AbstractDBTask {
 					buildInfoList.add(mBuildInfoBo.getBusinessObjectFromEntity(entity));
 				}
 				return PersistenceResult.LOAD_SUCCESSFUL;
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				return PersistenceResult.INVALID_QUERY;
 			}
-		case BuildInfoDataRange.LIMITED_MATCH:
-			long firstId = query.firstId;
-			long lastId = query.lastId;
+		case BuildInfoDataRange.PAGE_MATCH:
+			int page = query.getPage();
+			int nbPage = query.getNbInstancePerPage();
 
-			queryStringBuilder.append("select * from build_info")
-			.append(" ")
-			.append("where id between")
-			.append(" ")
-			.append(firstId)
-			.append(" ")
-			.append("and")
-			.append(" ")
-			.append(lastId);
-			if(query.workspace > 0) {
-				queryStringBuilder.append(" and workspace_id = ")
-				.append(query.workspace);
+			queryStringBuilder.append("select * from ").append("(").append("select * from build_info ")
+					.append("where workspace_id = ").append(query.getWorkspaceId()).append(" order by id desc ").append("limit ")
+					.append(page * nbPage).append(") ");
+
+			if (page > 1) {
+				queryStringBuilder.append("where id < ").append("(").append("select min(id) from (select id from build_info")
+						.append(" where workspace_id = ").append(query.getWorkspaceId()).append(" order by id desc limit ")
+						.append((page - 1) * nbPage).append("))");
 			}
 
 			loadQuery = entityManager.createNativeQuery(queryStringBuilder.toString(), BuildInfoEntity.class);
 			try {
 				@SuppressWarnings("unchecked")
 				List<BuildInfoEntity> entities = loadQuery.getResultList();
-				for(BuildInfoEntity entity : entities) {
+				for (BuildInfoEntity entity : entities) {
 					entityManager.detach(entity);
 					buildInfoList.add(mBuildInfoBo.getBusinessObjectFromEntity(entity));
 				}
 				return PersistenceResult.LOAD_SUCCESSFUL;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return PersistenceResult.INVALID_QUERY;
 			}
-			catch (Exception e) {
+		case BuildInfoDataRange.LIMITED_MATCH:
+			long firstId = query.getFirstId();
+			long lastId = query.getLastId();
+
+			queryStringBuilder.append("select * from build_info").append(" ").append("where id between").append(" ")
+					.append(firstId).append(" ").append("and").append(" ").append(lastId);
+			if (query.getWorkspaceId() > 0) {
+				queryStringBuilder.append(" and workspace_id = ").append(query.getWorkspaceId());
+			}
+
+			loadQuery = entityManager.createNativeQuery(queryStringBuilder.toString(), BuildInfoEntity.class);
+			try {
+				@SuppressWarnings("unchecked")
+				List<BuildInfoEntity> entities = loadQuery.getResultList();
+				for (BuildInfoEntity entity : entities) {
+					entityManager.detach(entity);
+					buildInfoList.add(mBuildInfoBo.getBusinessObjectFromEntity(entity));
+				}
+				return PersistenceResult.LOAD_SUCCESSFUL;
+			} catch (Exception e) {
 				e.printStackTrace();
 				return PersistenceResult.INVALID_QUERY;
 			}
 
 		case BuildInfoDataRange.ID_MATCH:
-			long id = query.id;
+			long id = query.getId();
 			BuildInfoEntity entity = entityManager.find(BuildInfoEntity.class, id);
-			if(entity != null) {
+			if (entity != null) {
 				entityManager.detach(entity);
 				buildInfoList.add(mBuildInfoBo.getBusinessObjectFromEntity(entity));
 			}
@@ -253,18 +229,16 @@ public class BuildInfoDBTaskImpl extends AbstractDBTask {
 		tx.begin();
 		try {
 			BuildInfoEntity entityToDelete = entityManager.find(BuildInfoEntity.class, id);
-			if(entityToDelete != null) {
+			if (entityToDelete != null) {
 				entityManager.remove(entityToDelete);
 				ret = PersistenceResult.REMOVE_SUCCESSFUL;
 			}
 			tx.commit();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			tx.rollback();
 			ret = PersistenceResult.REMOVE_FAILED;
-		}
-		finally {
+		} finally {
 			entityManager.close();
 		}
 		return ret;

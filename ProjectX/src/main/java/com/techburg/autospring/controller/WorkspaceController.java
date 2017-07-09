@@ -31,7 +31,6 @@ import com.techburg.autospring.model.business.BrowsingObject.OpenType;
 import com.techburg.autospring.model.business.Workspace;
 import com.techburg.autospring.model.entity.SimplifiedBrowsingObject;
 import com.techburg.autospring.model.query.WorkspacePersistenceQuery;
-import com.techburg.autospring.model.query.BasePersistenceQuery.DataRange;
 import com.techburg.autospring.service.abstr.IBrowsingObjectPersistentService;
 import com.techburg.autospring.service.abstr.IWorkspacePersistenceService;
 import com.techburg.autospring.service.abstr.PersistenceResult;
@@ -57,7 +56,7 @@ public class WorkspaceController {
 	private IBrowsingObjectPersistentService mBrowsingObjectPersistentService;
 	private IWorkspaceFileSystemDelegate mWorkspaceFileSystemDelegate;
 
-	//MARK: Injecting methods
+	// MARK: Injecting methods
 	@Autowired
 	public void setWorkspacePersistenceService(IWorkspacePersistenceService workspacePersistenceService) {
 		mWorkspacePersistenceService = workspacePersistenceService;
@@ -78,18 +77,18 @@ public class WorkspaceController {
 		mBrowsingObjectPersistentService = browsingObjectPersistentService;
 	}
 
-	//MARK: Controller methods
-	@RequestMapping(value="/workspace/new", method=RequestMethod.GET)
+	// MARK: Controller methods
+	@RequestMapping(value = "/workspace/new", method = RequestMethod.GET)
 	public String toNewWorkspacePage() {
 		return "workspace";
 	}
 
-	@RequestMapping(value="/workspace/github/new", method=RequestMethod.GET)
+	@RequestMapping(value = "/workspace/github/new", method = RequestMethod.GET)
 	public String toNewGithubWorkspacePage() {
 		return "workspace_github";
 	}
 
-	@RequestMapping(value="/workspace/github/script/{pullMethod}", method=RequestMethod.GET)
+	@RequestMapping(value = "/workspace/github/script/{pullMethod}", method = RequestMethod.GET)
 	@ResponseBody
 	public String getGithubBuildScriptContent(@PathVariable int pullMethod) {
 		boolean sparseCheckout = (pullMethod == 1);
@@ -99,71 +98,73 @@ public class WorkspaceController {
 		try {
 			FileUtil fileUtil = new FileUtil();
 			scriptFileContent = fileUtil.getStringFromFile(scriptFilePath);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			scriptFileContent = "Failed to load script !";
 		}
 		return scriptFileContent;
 	}
 
-	@RequestMapping(value="/workspace/edit/{workspaceId}", method=RequestMethod.GET)
+	@RequestMapping(value = "/workspace/edit/{workspaceId}", method = RequestMethod.GET)
 	public String editWorkspace(Model model, @PathVariable long workspaceId) {
 		Workspace edittingWorkspace = getWorkspacebyId(workspaceId);
-		if(edittingWorkspace == null) {
+		if (edittingWorkspace == null) {
 			return createRenderPageForError(model, "Workspace not found");
 		}
 		model.addAttribute(gEdittingWorkspaceAttributeName, edittingWorkspace);
-		model.addAttribute(gWorkspaceScriptContentAttributeName, mWorkspaceFileSystemDelegate.getWorkspaceScriptContent(edittingWorkspace));
+		model.addAttribute(gWorkspaceScriptContentAttributeName,
+				mWorkspaceFileSystemDelegate.getWorkspaceScriptContent(edittingWorkspace));
 		return "workspace";
 	}
 
-	@RequestMapping(value="/workspace/list", method=RequestMethod.GET)
+	@RequestMapping(value = "/workspace/list", method = RequestMethod.GET)
 	public String listWorkspaces(Model model) {
 		List<Workspace> workspaces = new ArrayList<Workspace>();
-		WorkspacePersistenceQuery query = new WorkspacePersistenceQuery();
-		query.dataRange = DataRange.ALL;
+		WorkspacePersistenceQuery query = WorkspacePersistenceQuery.createWorkspaceQueryForAll();
 		mWorkspacePersistenceService.loadWorkspace(workspaces, query);
 		model.addAttribute(gWorkspaceListAttributeName, workspaces);
 		return "workspacelist";
 	}
 
-	@RequestMapping(value="/workspace/detail/{workspaceId}", method=RequestMethod.GET)
+	@RequestMapping(value = "/workspace/detail/{workspaceId}", method = RequestMethod.GET)
 	public String detailWorkspace(Model model, @PathVariable long workspaceId) {
 		Workspace workspace = getWorkspacebyId(workspaceId);
-		if(workspace != null) {
+		if (workspace != null) {
 			model.addAttribute(gWorkspaceDescriptionAttributeName, workspace.getDescription());
 		}
 		model.addAttribute(gWorkspaceIdAttributeName, workspaceId);
 		return "workspacedetail";
 	}
 
-	@RequestMapping(value="/workspace/browse/{workspaceId}", method=RequestMethod.GET)
+	@RequestMapping(value = "/workspace/browse/{workspaceId}", method = RequestMethod.GET)
 	public String browseWorkspace(Model model, @PathVariable long workspaceId) {
 		Workspace workspace = getWorkspacebyId(workspaceId);
-		if(workspace != null) {
-			BrowsingObject workspaceRootBrowsingObject = mBrowsingObjectPersistentService.getBrowsingObjectByPath(workspace.getDirectoryPath());
-			if(workspaceRootBrowsingObject != null) {
+		if (workspace != null) {
+			BrowsingObject workspaceRootBrowsingObject = mBrowsingObjectPersistentService.getBrowsingObjectByPath(workspace
+					.getDirectoryPath());
+			if (workspaceRootBrowsingObject != null) {
 				return "redirect:/browse/" + workspaceRootBrowsingObject.getId();
 			}
 		}
 		return createRenderPageForError(model, "Couldn't find workspace on the file system");
 	}
 
-	@RequestMapping(value="/api/getPossibleBuildScripts/{workspaceId}", produces="application/json", method = RequestMethod.GET)
-	@ResponseBody 
+	@RequestMapping(value = "/api/getPossibleBuildScripts/{workspaceId}", produces = "application/json", method = RequestMethod.GET)
+	@ResponseBody
 	public List<SimplifiedBrowsingObject> getPossibleBuildScripts(@PathVariable long workspaceId) {
 		List<SimplifiedBrowsingObject> results = new ArrayList<SimplifiedBrowsingObject>();
 		Workspace workspace = getWorkspacebyId(workspaceId);
-		if(workspace != null) {
-			BrowsingObject workspaceRootBrowsingObject = mBrowsingObjectPersistentService.getBrowsingObjectByPath(workspace.getDirectoryPath());
+		if (workspace != null) {
+			BrowsingObject workspaceRootBrowsingObject = mBrowsingObjectPersistentService.getBrowsingObjectByPath(workspace
+					.getDirectoryPath());
 			List<BrowsingObject> childBrowsingObjects = new LinkedList<BrowsingObject>();
 			mBrowsingObjectPersistentService.getChildBrowsingObjects(workspaceRootBrowsingObject, childBrowsingObjects);
 
-			for(BrowsingObject browsingObject : childBrowsingObjects) {
-				//FIXME: Possibly refactor to use separated filter
-				//Currently only deal with 1-level child files 
-				if(browsingObject.getObjectType() == ObjectType.TYPE_FILE && browsingObject.getOpenType() == OpenType.OPEN_BY_BROWSER){
+			for (BrowsingObject browsingObject : childBrowsingObjects) {
+				// FIXME: Possibly refactor to use separated filter
+				// Currently only deal with 1-level child files
+				if (browsingObject.getObjectType() == ObjectType.TYPE_FILE
+						&& browsingObject.getOpenType() == OpenType.OPEN_BY_BROWSER) {
 					results.add(new SimplifiedBrowsingObject(browsingObject));
 				}
 			}
@@ -171,9 +172,8 @@ public class WorkspaceController {
 		return results;
 	}
 
-	@RequestMapping(value="/workspace/create", method=RequestMethod.POST)
-	public String createNewWorkspace(Model model,
-			@RequestParam(value = "zipFile", required = false) MultipartFile file,
+	@RequestMapping(value = "/workspace/create", method = RequestMethod.POST)
+	public String createNewWorkspace(Model model, @RequestParam(value = "zipFile", required = false) MultipartFile file,
 			@RequestParam(value = "workspacename", required = true) String workspaceName,
 			@RequestParam(value = "workspacedescription", required = true) String workspaceDescription,
 			@RequestParam(value = "buildscript_timing", required = true) String buildScriptSubmitted,
@@ -182,60 +182,58 @@ public class WorkspaceController {
 
 		boolean buildScriptDeferred = buildScriptSubmitted.equals("0");
 
-		//Create workspace along with an empty directory
-		Workspace newWorkspace = createNewWorkspaceInternal(workspaceName, workspaceDescription, buildScriptDeferred, buildScriptName);
+		// Create workspace along with an empty directory
+		Workspace newWorkspace = createNewWorkspaceInternal(workspaceName, workspaceDescription, buildScriptDeferred,
+				buildScriptName);
 
-		//Store build script content, extract uploaded file ...
+		// Store build script content, extract uploaded file ...
 		try {
 			postProcessWorkspaceCreation(newWorkspace, file, buildScriptDeferred, buildScriptContent);
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			return createRenderPageForError(model, e.getLocalizedMessage());
 		}
 
-		//Persist workspace into DB in synchronous mode
-		if(mWorkspacePersistenceService.persistWorkspace(newWorkspace, true) != PersistenceResult.REMOVE_SUCCESSFUL) {	
+		// Persist workspace into DB in synchronous mode
+		if (mWorkspacePersistenceService.persistWorkspace(newWorkspace, true) != PersistenceResult.REMOVE_SUCCESSFUL) {
 			return createRenderPageForError(model, gWorkspaceDBErrorMessage);
 		}
 
 		return createRenderPageForNewWorkspace(model, newWorkspace);
 	}
 
-	@RequestMapping(value="/workspace/create_github", method=RequestMethod.POST)
-	public String createNewWorkspaceFromGitHub(Model model, 
+	@RequestMapping(value = "/workspace/create_github", method = RequestMethod.POST)
+	public String createNewWorkspaceFromGitHub(Model model,
 			@RequestParam(value = "workspacename", required = true) String workspaceName,
 			@RequestParam(value = "workspacedescription", required = true) String workspaceDescription,
 			@RequestParam(value = "buildscriptname", required = true) String buildScriptName,
 			@RequestParam(value = "buildscriptcontent", required = true) String buildScriptContent) {
 
-		//Create workspace along with an empty directory
+		// Create workspace along with an empty directory
 		Workspace newWorkspace = createNewWorkspaceInternal(workspaceName, workspaceDescription, false, buildScriptName);
 
-		//Store build script content, extract uploaded file ...
+		// Store build script content, extract uploaded file ...
 		try {
 			postProcessWorkspaceCreation(newWorkspace, null, false, buildScriptContent);
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			return createRenderPageForError(model, e.getLocalizedMessage());
 		}
 
-		//Persist workspace into DB in synchronous mode
-		if(mWorkspacePersistenceService.persistWorkspace(newWorkspace, true) != PersistenceResult.REMOVE_SUCCESSFUL) {	
+		// Persist workspace into DB in synchronous mode
+		if (mWorkspacePersistenceService.persistWorkspace(newWorkspace, true) != PersistenceResult.REMOVE_SUCCESSFUL) {
 			return createRenderPageForError(model, gWorkspaceDBErrorMessage);
 		}
 
 		return createRenderPageForNewWorkspace(model, newWorkspace);
 	}
 
-	@RequestMapping(value="/workspace/update/{workspaceId}", method=RequestMethod.POST)
-	public String updateWorkspace(Model model, 
-			@PathVariable long workspaceId,
+	@RequestMapping(value = "/workspace/update/{workspaceId}", method = RequestMethod.POST)
+	public String updateWorkspace(Model model, @PathVariable long workspaceId,
 			@RequestParam(value = "workspacedescription", required = false, defaultValue = "") String workspaceDescription,
-			@RequestParam(value = "buildscriptname", required = false, defaultValue = "") String buildScriptName, 
+			@RequestParam(value = "buildscriptname", required = false, defaultValue = "") String buildScriptName,
 			@RequestParam(value = "buildscriptcontent", required = true) String buildScriptContent) {
 
 		Workspace updatingWorkspace = getWorkspacebyId(workspaceId);
-		if(updatingWorkspace == null) {
+		if (updatingWorkspace == null) {
 			return createRenderPageForError(model, "Workspace not found");
 		}
 
@@ -244,60 +242,51 @@ public class WorkspaceController {
 		try {
 			postProcessWorkspaceModified(updatingWorkspace, buildScriptContent);
 			return "redirect:/workspace/detail/" + workspaceId;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return createRenderPageForError(model, "Workspace can't updated");
 		}
 	}
 
-	//MARK: Private methods
+	// MARK: Private methods
 	private Workspace getWorkspacebyId(long id) {
 		List<Workspace> workspaces = new ArrayList<Workspace>();
-		if(mWorkspacePersistenceService != null) {
-			WorkspacePersistenceQuery query = new WorkspacePersistenceQuery();
-			query.dataRange = DataRange.ID_MATCH;
-			query.id = id;
+		if (mWorkspacePersistenceService != null) {
+			WorkspacePersistenceQuery query = WorkspacePersistenceQuery.createQueryById(id);
 			mWorkspacePersistenceService.loadWorkspace(workspaces, query);
 			return workspaces.isEmpty() ? null : workspaces.get(0);
 		}
 		return null;
 	}
 
-	private Workspace createNewWorkspaceInternal(String workspaceName, 
-			String workspaceDescription, 
-			boolean deferredBuildScript, 
+	private Workspace createNewWorkspaceInternal(String workspaceName, String workspaceDescription, boolean deferredBuildScript,
 			String buildScriptName) {
-		//Create workspace along with workspace directory. If no build script name specified -> create in deferred mode
-		Workspace newWorkspace = deferredBuildScript ? mWorkspaceFactory.createWorkspaceDeferringBuildScript(workspaceName) : mWorkspaceFactory.createWorkspace(workspaceName, buildScriptName);
+		// Create workspace along with workspace directory. If no build script
+		// name specified -> create in deferred mode
+		Workspace newWorkspace = deferredBuildScript ? mWorkspaceFactory.createWorkspaceDeferringBuildScript(workspaceName)
+				: mWorkspaceFactory.createWorkspace(workspaceName, buildScriptName);
 		newWorkspace.setDescription(workspaceDescription);
 		return newWorkspace;
 	}
 
-	private void postProcessWorkspaceCreation(Workspace newWorkspace, 
-			MultipartFile uploadedFile, 
-			boolean buildScriptDeferred, 
+	private void postProcessWorkspaceCreation(Workspace newWorkspace, MultipartFile uploadedFile, boolean buildScriptDeferred,
 			String buildScriptContent) throws Exception {
 
-		AbstractWorkspaceCreateDelegate workspaceDelegate = getWorkspaceCreateDelegate(uploadedFile, 
-				buildScriptDeferred, 
+		AbstractWorkspaceCreateDelegate workspaceDelegate = getWorkspaceCreateDelegate(uploadedFile, buildScriptDeferred,
 				buildScriptContent);
 		try {
 			workspaceDelegate.onWorkspaceCreated(newWorkspace);
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			mWorkspaceFileSystemDelegate.eraseWorkspace(newWorkspace);
 			throw e;
 		}
 	}
 
-	private void modifyWorkspace(Workspace edittingWorkspace, 
-			String workspaceDescription, 
-			String buildScriptName) {
-		if(workspaceDescription != null && !workspaceDescription.isEmpty()) {
+	private void modifyWorkspace(Workspace edittingWorkspace, String workspaceDescription, String buildScriptName) {
+		if (workspaceDescription != null && !workspaceDescription.isEmpty()) {
 			edittingWorkspace.setDescription(workspaceDescription);
 		}
-		if(buildScriptName != null && !buildScriptName.isEmpty()) {
+		if (buildScriptName != null && !buildScriptName.isEmpty()) {
 			edittingWorkspace.setScriptFilePath(edittingWorkspace.getDirectoryPath() + File.separator + buildScriptName);
 		}
 	}
@@ -306,27 +295,26 @@ public class WorkspaceController {
 		AbstractWorkspaceModifyDelegate workspaceDelegate = getWorkspaceUpdateDelegate(buildScriptContent);
 		try {
 			workspaceDelegate.onWorkspaceModified(workspace);
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw e;
 		}
 	}
 
-	//MARK: Method to generate proper delegate
-	private AbstractWorkspaceCreateDelegate getWorkspaceCreateDelegate(MultipartFile file, 
-			boolean deferredBuildScript, 
+	// MARK: Method to generate proper delegate
+	private AbstractWorkspaceCreateDelegate getWorkspaceCreateDelegate(MultipartFile file, boolean deferredBuildScript,
 			String buildScriptContent) {
 
 		AbstractWorkspaceCreateDelegate fileUploadDelegate = null;
-		if(file != null && !file.isEmpty()) {
+		if (file != null && !file.isEmpty()) {
 			fileUploadDelegate = new FileUploadWorkspaceCreateDelegateImpl(file, mWorkspaceFileSystemDelegate);
 		}
 		AbstractWorkspaceCreateDelegate buildScriptDelegate = null;
-		if(!deferredBuildScript) {
+		if (!deferredBuildScript) {
 			buildScriptDelegate = new BuildScriptWorkspaceCreateDelegateImpl(buildScriptContent, mWorkspaceFileSystemDelegate);
 		}
-		//Assume that the case both empty file and empty build script never happens as a result of a validation elsewhere.
-		if(fileUploadDelegate != null) {
+		// Assume that the case both empty file and empty build script never
+		// happens as a result of a validation elsewhere.
+		if (fileUploadDelegate != null) {
 			fileUploadDelegate.setSuccessor(buildScriptDelegate);
 			return fileUploadDelegate;
 		}
@@ -334,21 +322,23 @@ public class WorkspaceController {
 	}
 
 	private AbstractWorkspaceModifyDelegate getWorkspaceUpdateDelegate(String buildScriptContent) {
-		AbstractWorkspaceModifyDelegate buildScriptSavingDelegate = new BuildScriptSavingWorkspaceModifyDelegateImpl(mWorkspaceFileSystemDelegate, buildScriptContent);
-		AbstractWorkspaceModifyDelegate persistingDelegate = new PersistingWorkspaceModifyDelegateImpl(mWorkspacePersistenceService, mBrowsingObjectPersistentService);
+		AbstractWorkspaceModifyDelegate buildScriptSavingDelegate = new BuildScriptSavingWorkspaceModifyDelegateImpl(
+				mWorkspaceFileSystemDelegate, buildScriptContent);
+		AbstractWorkspaceModifyDelegate persistingDelegate = new PersistingWorkspaceModifyDelegateImpl(
+				mWorkspacePersistenceService, mBrowsingObjectPersistentService);
 		buildScriptSavingDelegate.setSuccessor(persistingDelegate);
 		return buildScriptSavingDelegate;
 	}
 
-	//MARK: To render error pages (may extend to other pages)
+	// MARK: To render error pages (may extend to other pages)
 	private String createRenderPageForError(Model model, String errorMessage) {
 		model.addAttribute(gWorkspaceErrorAttributeName, errorMessage);
 		return "forward:/error_page";
 	}
 
 	private String createRenderPageForNewWorkspace(Model model, Workspace newWorkspace) {
-		//If workspace ready, go to inform page
-		if(newWorkspace.getScriptFilePath() != null) {
+		// If workspace ready, go to inform page
+		if (newWorkspace.getScriptFilePath() != null) {
 			model.addAttribute(gRedirectPageAttributeName, "/workspace/list");
 			return "inform";
 		}

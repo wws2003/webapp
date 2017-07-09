@@ -17,25 +17,23 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import com.techburg.autospring.model.business.BuildInfo;
 import com.techburg.autospring.model.business.BuildInfo.Status;
 import com.techburg.autospring.model.query.BuildInfoPersistenceQuery;
-import com.techburg.autospring.model.query.BasePersistenceQuery.DataRange;
 import com.techburg.autospring.service.abstr.IBuildInfoPersistenceService;
 import com.techburg.autospring.service.abstr.PersistenceResult;
 
 public class TestJPA {
 
-	//TODO Inject mPersistenceService if possible
+	// TODO Inject mPersistenceService if possible
 	private IBuildInfoPersistenceService mPersistenceService;
 
 	@Before
 	public void setUp() throws Exception {
-		//Retrieve mPersistenceService by factory method
+		// Retrieve mPersistenceService by factory method
 		String xmlPath = "file:src/main/webapp/WEB-INF/spring-conf/springmvc-conf.xml";
 		try {
 			ApplicationContext applicationContext = new ClassPathXmlApplicationContext(xmlPath);
-			//applicationContext is also a bean factory...
+			// applicationContext is also a bean factory...
 			mPersistenceService = applicationContext.getBean("buildInfoPersistenceService", IBuildInfoPersistenceService.class);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
@@ -43,7 +41,7 @@ public class TestJPA {
 
 	@After
 	public void tearDown() throws Exception {
-		//TODO Release resource if necessary
+		// TODO Release resource if necessary
 	}
 
 	@Test
@@ -56,17 +54,16 @@ public class TestJPA {
 		buildInfo.setEndTimeStamp(new Date());
 		assertEquals(mPersistenceService.persistBuildInfo(buildInfo), PersistenceResult.PERSISTENCE_SUCCESSFUL);
 		List<BuildInfo> buildInfoList = new ArrayList<BuildInfo>();
-		BuildInfoPersistenceQuery query = new BuildInfoPersistenceQuery();
-		query.dataRange = DataRange.ALL;
+		BuildInfoPersistenceQuery query = BuildInfoPersistenceQuery.createBuildInfoQueryForAll();
 		try {
 			mPersistenceService.loadPersistedBuildInfo(buildInfoList, query);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		assertTrue(buildInfoList.size() > 0);
-		
-		//assertEquals(mPersistenceService.removeBuildInfoByID(1), PersistenceResult.REMOVE_SUCCESSFUL);
+
+		// assertEquals(mPersistenceService.removeBuildInfoByID(1),
+		// PersistenceResult.REMOVE_SUCCESSFUL);
 		assertEquals(mPersistenceService.removeBuildInfoByID(13333), PersistenceResult.REMOVE_FAILED);
 	}
 }
