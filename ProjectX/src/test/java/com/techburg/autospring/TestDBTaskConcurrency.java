@@ -18,7 +18,6 @@ import com.techburg.autospring.db.task.abstr.IDBTaskExecutor;
 import com.techburg.autospring.db.task.impl.BuildInfoDBTaskImpl;
 import com.techburg.autospring.model.business.BuildInfo;
 import com.techburg.autospring.model.query.BuildInfoPersistenceQuery;
-import com.techburg.autospring.model.query.BasePersistenceQuery.DataRange;
 
 public class TestDBTaskConcurrency {
 
@@ -28,16 +27,15 @@ public class TestDBTaskConcurrency {
 
 	@Before
 	public void setUp() throws Exception {
-		//Retrieve mPersistenceService by factory method
+		// Retrieve mPersistenceService by factory method
 		String xmlPath = "file:src/main/webapp/WEB-INF/spring-conf/springmvc-conf.xml";
 		try {
 			ApplicationContext applicationContext = new ClassPathXmlApplicationContext(xmlPath);
-			//applicationContext is also a bean factory...
+			// applicationContext is also a bean factory...
 			mTaskExecutor = applicationContext.getBean("dBTaskExecutor", IDBTaskExecutor.class);
 			mEntityManagerFactory = applicationContext.getBean("entityManagerFactory", EntityManagerFactory.class);
 			mBuildInfoBo = applicationContext.getBean("buildInfoBo", IBuildInfoBo.class);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
@@ -51,7 +49,7 @@ public class TestDBTaskConcurrency {
 	public void test() {
 		testReadRead();
 		testReadWrite();
-		//persistOneBuildInfo();
+		// persistOneBuildInfo();
 	}
 
 	private void testReadRead() {
@@ -71,19 +69,17 @@ public class TestDBTaskConcurrency {
 
 	private void testReadWrite() {
 		/*
-		 * Try many threads to read and write against DB. 
-		 * Read task: select from build_info
-		 * Write task: insert new build_info
+		 * Try many threads to read and write against DB. Read task: select from
+		 * build_info Write task: insert new build_info
 		 */
 		int numberOfThreads = 100;
 		Runnable task = new Runnable() {
 			@Override
 			public void run() {
 				boolean toDoReadTask = Math.random() > 0.5;
-				if(toDoReadTask) {
+				if (toDoReadTask) {
 					doReadTask();
-				}
-				else {
+				} else {
 					doWriteTask();
 				}
 			}
@@ -117,9 +113,8 @@ public class TestDBTaskConcurrency {
 	private void loadOneBuildInfo() {
 		// Create the DB read operation
 		BuildInfoDBTaskImpl dbTask = new BuildInfoDBTaskImpl(mBuildInfoBo, mEntityManagerFactory);
-		BuildInfoPersistenceQuery paramBuildInfoLoadQuery = new BuildInfoPersistenceQuery();
-		paramBuildInfoLoadQuery.dataRange = DataRange.ID_MATCH;
-		paramBuildInfoLoadQuery.id = (long) (Math.random() * 100);
+		BuildInfoPersistenceQuery paramBuildInfoLoadQuery = BuildInfoPersistenceQuery.createBuildInfoQueryById((long) (Math
+				.random() * 100));
 		dbTask.setLoadParam(paramBuildInfoLoadQuery);
 		dbTask.setScheduleMode(AbstractDBTask.SCHEDULE_ASYNC_MODE);
 
@@ -129,7 +124,8 @@ public class TestDBTaskConcurrency {
 		List<BuildInfo> buildInfoList = new ArrayList<BuildInfo>();
 		dbTask.getLoadResult(buildInfoList);
 
-		System.out.println("------------------------------------Number of results = " + buildInfoList.size() + " for id = " + paramBuildInfoLoadQuery.id + "------------------------------------");
+		System.out.println("------------------------------------Number of results = " + buildInfoList.size() + " for id = "
+				+ paramBuildInfoLoadQuery.getId() + "------------------------------------");
 	}
 
 	private void persistOneBuildInfo() {
@@ -145,7 +141,8 @@ public class TestDBTaskConcurrency {
 		mTaskExecutor.executeDBTask(dbTask);
 
 		int persistResult = dbTask.getPersistResult();
-		System.out.println("------------------------------------Persist result = " + persistResult + "------------------------------------");
+		System.out.println("------------------------------------Persist result = " + persistResult
+				+ "------------------------------------");
 	}
 
 	private void runThreadsOfTask(int numberOfThreads, Runnable task) {
@@ -154,10 +151,10 @@ public class TestDBTaskConcurrency {
 			Thread t = new Thread(task);
 			threads.add(t);
 		}
-		for(Thread t : threads) {
+		for (Thread t : threads) {
 			t.start();
 		}
-		for(Thread t : threads) {
+		for (Thread t : threads) {
 			try {
 				t.join();
 			} catch (InterruptedException e) {

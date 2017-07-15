@@ -14,16 +14,15 @@
 <%
 	//Bad practice to use scriptlet, but try first
 	@SuppressWarnings("unchecked")
-	Map<String, String> breadCrumbModelMap = (Map<String, String>) jspContext
-			.getAttribute("breadCrumbModelMap");
-			
+	Map<String, String> breadCrumbModelMap = (Map<String, String>) jspContext.getAttribute("breadCrumbModelMap",
+			PageContext.PAGE_SCOPE);
+
 	//Use a sorted map in order to try to avoid the backward compability of Comparator		
 	SortedMap<Integer, BreadCrumbModel> breadCrumbModelOrderedMap = new TreeMap<Integer, BreadCrumbModel>();
-			
+
 	//Loop through the dynamic attributes
 	int defaultOrderNo = 0;
-	for (Map.Entry<String, String> entry : breadCrumbModelMap
-			.entrySet()) {
+	for (Map.Entry<String, String> entry : breadCrumbModelMap.entrySet()) {
 		//Parsing BreadCrumbModel from CSV
 		String breadCrumbModelCSV = entry.getValue();
 		String[] breadCrumbParts = breadCrumbModelCSV.split(",");
@@ -32,10 +31,8 @@
 		String path = breadCrumbParts[0];
 		String dispName = breadCrumbParts[1];
 		boolean isCurrentPage = Boolean.valueOf(breadCrumbParts[2]);
-		int orderNo = breadCrumbParts.length > 3 ? Integer
-				.valueOf(breadCrumbParts[3]) : defaultOrderNo++;
-		BreadCrumbModel breadCrumbModel = new BreadCrumbModel(path,
-				dispName, isCurrentPage, orderNo);
+		int orderNo = breadCrumbParts.length > 3 ? Integer.valueOf(breadCrumbParts[3]) : defaultOrderNo++;
+		BreadCrumbModel breadCrumbModel = new BreadCrumbModel(path, dispName, isCurrentPage, orderNo);
 
 		//Add to ordered map
 		breadCrumbModelOrderedMap.put(orderNo, breadCrumbModel);

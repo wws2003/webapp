@@ -21,7 +21,7 @@
 	<hpgTag:frame>
 		<%-- Breadcrumb --%>
 		<hpgTag:breadcrumb bc1="/home,Home,false,1" bc2="/workspace/list,Workspace list,false,2" bc3="/workspace/detail/${builtInfoPage.workspaceId},Workspace info,false,3"
-			bc4="/,BuildList,true,4"
+			bc4="/,Build list,true,4"
 		/>
 		<%-- Content --%>
 		<div class="main_content">

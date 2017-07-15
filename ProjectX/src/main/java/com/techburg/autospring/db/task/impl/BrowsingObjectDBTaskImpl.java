@@ -31,14 +31,14 @@ public class BrowsingObjectDBTaskImpl extends AbstractDBTask {
 	private IBrowsingObjectBo mBrowsingObjectBo = null;
 	private EntityManagerFactory mEntityManagerFactory = null;
 
-	//parameters set from outside
+	// parameters set from outside
 	private BrowsingObject mParamBrowsingObjectToPersist = null;
 	private long mParamGetById = -1;
 	private String mParamGetByPath = null;
 	private BrowsingObject mParamGetChildrenParent = null;
 	private long mParamRemoveById = -1;
 
-	//Results calculated by execute()
+	// Results calculated by execute()
 	private int mResultForPersist = -1;
 	private int mResultForGetChildren = -1;
 	private int mResultForRemoveAll = -1;
@@ -52,7 +52,7 @@ public class BrowsingObjectDBTaskImpl extends AbstractDBTask {
 		mBrowsingObjectBo = browsingObjectBo;
 		mEntityManagerFactory = etmFactory;
 	}
-	
+
 	public void setPersistParams(BrowsingObject browsingObjectToPersist) {
 		mParamBrowsingObjectToPersist = browsingObjectToPersist;
 		mTaskType = TASK_TYPE_PERSIST;
@@ -68,34 +68,34 @@ public class BrowsingObjectDBTaskImpl extends AbstractDBTask {
 		mTaskType = TASK_TYPE_GET_BY_ID;
 		setDBReadWriteMode(DB_READ_MODE);
 	}
-	
+
 	public BrowsingObject getGetByIdResult() {
 		return mResultBrowsingObjectGetById;
 	}
-	
+
 	public void setGetByPathParam(String path) {
 		mParamGetByPath = path;
 		mTaskType = TASK_TYPE_GET_BY_PATH;
 		setDBReadWriteMode(DB_READ_MODE);
 	}
-	
+
 	public BrowsingObject getGetByPathResult() {
 		return mResultBrowsingObjectGetByPath;
 	}
-	
+
 	public void setGetChildrenParam(BrowsingObject parent) {
 		mParamGetChildrenParent = parent;
 		mTaskType = TASK_TYPE_GET_CHILDREN;
 		setDBReadWriteMode(DB_READ_MODE);
 	}
-	
+
 	public int getGetChildrenResult(List<BrowsingObject> children) {
 		children.clear();
 		children.addAll(mResultBrowsingObjectListGetChildren);
 		mResultBrowsingObjectListGetChildren.clear();
 		return mResultForGetChildren;
 	}
-	
+
 	public void setRemoveAllParam() {
 		mTaskType = TASK_TYPE_REMOVE_ALL;
 		setDBReadWriteMode(DB_WRITE_MODE);
@@ -104,7 +104,7 @@ public class BrowsingObjectDBTaskImpl extends AbstractDBTask {
 	public int getRemoveAllResult() {
 		return mResultForRemoveAll;
 	}
-	
+
 	public void setRemoveByIdParam(long id) {
 		mTaskType = TASK_TYPE_REMOVE_BY_ID;
 		setDBReadWriteMode(DB_WRITE_MODE);
@@ -114,7 +114,7 @@ public class BrowsingObjectDBTaskImpl extends AbstractDBTask {
 	public int getRemoveByIdResult() {
 		return mResultForRemoveById;
 	}
-	
+
 	@Override
 	public void execute() {
 		switch (mTaskType) {
@@ -154,16 +154,14 @@ public class BrowsingObjectDBTaskImpl extends AbstractDBTask {
 		try {
 			tx.begin();
 			entityManager.persist(entity);
-			entityManager.detach(entity); //Do not need to manage this object longer !
+			entityManager.detach(entity); // Do not need to manage this object longer !
 			browsingObject.setId(entity.getId());
 			tx.commit();
-		}
-		catch (PersistenceException pe) {
+		} catch (PersistenceException pe) {
 			pe.printStackTrace();
 			tx.rollback();
 			return PersistenceResult.PERSISTENCE_FAILED;
-		}
-		finally {
+		} finally {
 			entityManager.close();
 		}
 		return PersistenceResult.PERSISTENCE_SUCCESSFUL;
@@ -172,9 +170,10 @@ public class BrowsingObjectDBTaskImpl extends AbstractDBTask {
 	private BrowsingObject getBrowsingObjectById(long id) {
 		EntityManager entityManager = mEntityManagerFactory.createEntityManager();
 		BrowsingObjectEntity entity = entityManager.find(BrowsingObjectEntity.class, id);
-		if(entity != null) {
+		if (entity != null) {
+			BrowsingObject browsingObject = mBrowsingObjectBo.getBusinessObjectFromEntity(entity);
 			entityManager.detach(entity);
-			return mBrowsingObjectBo.getBusinessObjectFromEntity(entity);
+			return browsingObject;
 		}
 		return null;
 	}
@@ -184,7 +183,7 @@ public class BrowsingObjectDBTaskImpl extends AbstractDBTask {
 		Query query = entityManager.createNamedQuery("findBrowsingObjectByPath");
 		query.setParameter("path", path);
 		BrowsingObjectEntity entity = (BrowsingObjectEntity) query.getSingleResult();
-		if(entity != null) {
+		if (entity != null) {
 			BrowsingObject browsingObject = mBrowsingObjectBo.getBusinessObjectFromEntity(entity);
 			entityManager.detach(entity);
 			return browsingObject;
@@ -199,7 +198,7 @@ public class BrowsingObjectDBTaskImpl extends AbstractDBTask {
 		query.setParameter("parentId", parent.getId());
 		@SuppressWarnings("unchecked")
 		List<BrowsingObjectEntity> entities = query.getResultList();
-		for(BrowsingObjectEntity entity : entities) {
+		for (BrowsingObjectEntity entity : entities) {
 			BrowsingObject browsingObject = mBrowsingObjectBo.getBusinessObjectFromEntity(entity);
 			children.add(browsingObject);
 			entityManager.detach(entity);
@@ -215,13 +214,11 @@ public class BrowsingObjectDBTaskImpl extends AbstractDBTask {
 			Query query = entityManager.createNamedQuery("removeAll");
 			query.executeUpdate();
 			tx.commit();
-		}
-		catch (PersistenceException pe) {
+		} catch (PersistenceException pe) {
 			pe.printStackTrace();
 			tx.rollback();
 			return PersistenceResult.REMOVE_FAILED;
-		}
-		finally {
+		} finally {
 			entityManager.close();
 		}
 		return PersistenceResult.REMOVE_SUCCESSFUL;
@@ -236,13 +233,11 @@ public class BrowsingObjectDBTaskImpl extends AbstractDBTask {
 			query.setParameter("id", id);
 			query.executeUpdate();
 			tx.commit();
-		}
-		catch (PersistenceException pe) {
+		} catch (PersistenceException pe) {
 			pe.printStackTrace();
 			tx.rollback();
 			return PersistenceResult.REMOVE_FAILED;
-		}
-		finally {
+		} finally {
 			entityManager.close();
 		}
 		return PersistenceResult.REMOVE_SUCCESSFUL;

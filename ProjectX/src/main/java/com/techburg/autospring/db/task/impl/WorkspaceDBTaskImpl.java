@@ -14,7 +14,7 @@ import com.techburg.autospring.db.task.abstr.AbstractDBTask;
 import com.techburg.autospring.model.business.Workspace;
 import com.techburg.autospring.model.entity.WorkspaceEntity;
 import com.techburg.autospring.model.query.WorkspacePersistenceQuery;
-import com.techburg.autospring.model.query.BasePersistenceQuery.DataRange;
+import com.techburg.autospring.model.query.WorkspacePersistenceQuery.WorkspaceDataRange;
 import com.techburg.autospring.service.abstr.IBrowsingObjectPersistentService;
 import com.techburg.autospring.service.abstr.PersistenceResult;
 
@@ -27,14 +27,14 @@ public class WorkspaceDBTaskImpl extends AbstractDBTask {
 
 	private int mTaskType = 0;
 
-	//parameters set from outside
+	// parameters set from outside
 	private Workspace mParamWorkspaceToPersist = null;
 	private Workspace mParamWorkspaceToUpdate = null;
 	private WorkspacePersistenceQuery mParamWorkspaceLoadQuery = null;
 	private IBrowsingObjectPersistentService mParamBrowsingObjectPersistentService = null;
 	private long mParamIdForRemove = -1;
 
-	//Results calculated by execute()
+	// Results calculated by execute()
 	private int mResultForPersist = -1;
 	private int mResultForLoad = -1;
 	private int mResultForRemove = -1;
@@ -123,15 +123,15 @@ public class WorkspaceDBTaskImpl extends AbstractDBTask {
 		try {
 			entityManager.persist(entity);
 			tx.commit();
-		}
-		catch (PersistenceException pe) {
+		} catch (PersistenceException pe) {
 			pe.printStackTrace();
 			tx.rollback();
 			return PersistenceResult.PERSISTENCE_FAILED;
-		}
-		finally {
-			workspace.setId(entity.getId());//Remember stored id. Still does not work now (?)
-			entityManager.detach(entity); //Do not need to manage this object longer !
+		} finally {
+			workspace.setId(entity.getId());// Remember stored id. Still does
+			// not work now (?)
+			entityManager.detach(entity); // Do not need to manage this object
+			// longer !
 			entityManager.close();
 		}
 		return mParamBrowsingObjectPersistentService.persistBrowsingObjectInDirectory(workspace.getDirectoryPath());
@@ -140,26 +140,24 @@ public class WorkspaceDBTaskImpl extends AbstractDBTask {
 	private int updateWorkspace(Workspace workspace) {
 		EntityManager entityManager = mEntityManagerFactory.createEntityManager();
 		WorkspaceEntity entity = entityManager.find(WorkspaceEntity.class, workspace.getId());
-		if(entity == null) {
+		if (entity == null) {
 			return PersistenceResult.UPDATE_FAILED;
 		}
 		EntityTransaction tx = entityManager.getTransaction();
 		tx.begin();
 		try {
-			//Probably set more attributes into entity
+			// Probably set more attributes into entity
 			entity.setDescription(workspace.getDescription());
 			entity.setScriptFilePath(workspace.getScriptFilePath());
 			tx.commit();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			tx.rollback();
 			return PersistenceResult.UPDATE_FAILED;
-		}
-		finally {
+		} finally {
 			entityManager.close();
 		}
-		
+
 		return PersistenceResult.UPDATE_SUCCESSFUL;
 	}
 
@@ -168,31 +166,42 @@ public class WorkspaceDBTaskImpl extends AbstractDBTask {
 		buildInfoList.clear();
 		EntityManager entityManager = mEntityManagerFactory.createEntityManager();
 
-		switch (query.dataRange) {
-		case DataRange.ALL:
+		switch (query.getDataRange()) {
+		case WorkspaceDataRange.ALL:
 			loadQuery = entityManager.createNativeQuery("select * from workspace;", WorkspaceEntity.class);
 			try {
 				@SuppressWarnings("unchecked")
 				List<WorkspaceEntity> entities = loadQuery.getResultList();
-				for(WorkspaceEntity entity : entities) {
+				for (WorkspaceEntity entity : entities) {
 					entityManager.detach(entity);
 					buildInfoList.add(mWorkspaceBo.getBusinessObjectFromEntity(entity));
 				}
 				return PersistenceResult.LOAD_SUCCESSFUL;
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				return PersistenceResult.INVALID_QUERY;
 			}
-		case DataRange.ID_MATCH:
-			long id = query.id;
 
+		case WorkspaceDataRange.ID_MATCH:
+			long id = query.getId();
 			WorkspaceEntity entity = entityManager.find(WorkspaceEntity.class, id);
-			if(entity != null) {
+			if (entity != null) {
 				entityManager.detach(entity);
 				buildInfoList.add(mWorkspaceBo.getBusinessObjectFromEntity(entity));
 			}
 			return PersistenceResult.LOAD_SUCCESSFUL;
+
+		case WorkspaceDataRange.PATH_MATCH:
+			String path = query.getPath();
+			Query queryObj = entityManager.createNamedQuery("findWorkspaceByPath");
+			queryObj.setParameter("path", path);
+			WorkspaceEntity entity1 = (WorkspaceEntity) queryObj.getSingleResult();
+			if (entity1 != null) {
+				entityManager.detach(entity1);
+				buildInfoList.add(mWorkspaceBo.getBusinessObjectFromEntity(entity1));
+			}
+			return PersistenceResult.LOAD_SUCCESSFUL;
+
 		default:
 			return PersistenceResult.INVALID_QUERY;
 		}
