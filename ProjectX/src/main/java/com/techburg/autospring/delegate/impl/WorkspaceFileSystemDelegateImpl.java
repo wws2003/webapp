@@ -17,18 +17,20 @@ import com.techburg.autospring.util.FileUtil;
 
 public class WorkspaceFileSystemDelegateImpl implements IWorkspaceFileSystemDelegate {
 
-	//Implement
+	// Implement
+	@Override
 	public void saveWorkspaceBuildScriptContent(Workspace workspace, String buildScriptContent) throws Exception {
 		String scriptFilePath = workspace.getScriptFilePath();
 
-		//Avoid script run error due to \r character
+		// Avoid script run error due to \r character
 		String content = buildScriptContent.replace("\r\n", "\n");
 
 		FileUtil fileUtil = new FileUtil();
 		fileUtil.storeContentToFile(content, scriptFilePath);
 	}
 
-	//Implement
+	// Implement
+	@Override
 	public String getWorkspaceScriptContent(Workspace workspace) {
 		FileUtil fileUtil = new FileUtil();
 		try {
@@ -39,46 +41,52 @@ public class WorkspaceFileSystemDelegateImpl implements IWorkspaceFileSystemDele
 		}
 	}
 
-	//Implement
+	// Implement
+	@Override
 	public void extractUploadedZipFileToWorkspace(Workspace workspace, MultipartFile uploadedZipFile) throws Exception {
 		String outDirectory = workspace.getDirectoryPath();
 
-		//Refer from http://developer.android.com/reference/java/util/zip/ZipInputStream.html
+		// Refer from http://developer.android.com/reference/java/util/zip/ZipInputStream.html
 		ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(uploadedZipFile.getInputStream()));
 		try {
 			ZipEntry zipEntry;
 			while ((zipEntry = zipInputStream.getNextEntry()) != null) {
 				String filename = zipEntry.getName();
-				
+
 				String outFilePath = outDirectory + File.separator + filename;
 				File outputFile = new File(outFilePath);
 
-				//Create new file/folder corresponding to zip entry
-				if(zipEntry.isDirectory()) {
-					if(!outputFile.mkdir()) {
+				// First make sure its parents directory exist to avoid FileNotFoundException
+				File parent = outputFile.getParentFile();
+				if (!parent.exists()) {
+					parent.mkdirs();
+				}
+
+				if (zipEntry.isDirectory()) {
+					// Create new file/folder corresponding to zip entry
+					if (!outputFile.mkdir()) {
 						throw new IOException("Can't extract sub-folder");
 					}
-				}
-				else {
-					//Otherwise just copy file content
-					OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
+				} else {
+					// Otherwise just copy file content
 
+					// Write file content
+					OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
 					byte[] buffer = new byte[1024];
 					int count;
 					while ((count = zipInputStream.read(buffer)) != -1) {
 						outputStream.write(buffer, 0, count);
 					}
-
 					outputStream.close();
 				}
 			}
-		} 
-		finally {
+		} finally {
 			zipInputStream.close();
 		}
 	}
-	
-	//Implement
+
+	// Implement
+	@Override
 	public void eraseWorkspace(Workspace workspace) throws Exception {
 		FileUtil fileUtil = new FileUtil();
 		fileUtil.removeAtPath(workspace.getDirectoryPath());

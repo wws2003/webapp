@@ -248,7 +248,14 @@ public class WorkspaceController {
 		}
 	}
 
-	// MARK: Private methods
+	/*---------------------------------Below are private methods--------------------------*/
+
+	/**
+	 * Get workspace instance by id by looking into storage
+	 * 
+	 * @param id
+	 * @return
+	 */
 	private Workspace getWorkspacebyId(long id) {
 		List<Workspace> workspaces = new ArrayList<Workspace>();
 		if (mWorkspacePersistenceService != null) {
@@ -259,6 +266,15 @@ public class WorkspaceController {
 		return null;
 	}
 
+	/**
+	 * Create new workspace materially
+	 * 
+	 * @param workspaceName
+	 * @param workspaceDescription
+	 * @param deferredBuildScript
+	 * @param buildScriptName
+	 * @return
+	 */
 	private Workspace createNewWorkspaceInternal(String workspaceName, String workspaceDescription, boolean deferredBuildScript,
 			String buildScriptName) {
 		// Create workspace along with workspace directory. If no build script
@@ -269,6 +285,14 @@ public class WorkspaceController {
 		return newWorkspace;
 	}
 
+	/**
+	 * 
+	 * @param newWorkspace
+	 * @param uploadedFile
+	 * @param buildScriptDeferred
+	 * @param buildScriptContent
+	 * @throws Exception
+	 */
 	private void postProcessWorkspaceCreation(Workspace newWorkspace, MultipartFile uploadedFile, boolean buildScriptDeferred,
 			String buildScriptContent) throws Exception {
 
@@ -282,6 +306,13 @@ public class WorkspaceController {
 		}
 	}
 
+	/**
+	 * Update workspace description and build script name
+	 * 
+	 * @param edittingWorkspace
+	 * @param workspaceDescription
+	 * @param buildScriptName
+	 */
 	private void modifyWorkspace(Workspace edittingWorkspace, String workspaceDescription, String buildScriptName) {
 		if (workspaceDescription != null && !workspaceDescription.isEmpty()) {
 			edittingWorkspace.setDescription(workspaceDescription);
@@ -291,6 +322,12 @@ public class WorkspaceController {
 		}
 	}
 
+	/**
+	 * 
+	 * @param workspace
+	 * @param buildScriptContent
+	 * @throws Exception
+	 */
 	private void postProcessWorkspaceModified(Workspace workspace, String buildScriptContent) throws Exception {
 		AbstractWorkspaceModifyDelegate workspaceDelegate = getWorkspaceUpdateDelegate(buildScriptContent);
 		try {
@@ -301,6 +338,13 @@ public class WorkspaceController {
 	}
 
 	// MARK: Method to generate proper delegate
+	/**
+	 * 
+	 * @param file
+	 * @param deferredBuildScript
+	 * @param buildScriptContent
+	 * @return
+	 */
 	private AbstractWorkspaceCreateDelegate getWorkspaceCreateDelegate(MultipartFile file, boolean deferredBuildScript,
 			String buildScriptContent) {
 
@@ -331,11 +375,25 @@ public class WorkspaceController {
 	}
 
 	// MARK: To render error pages (may extend to other pages)
+	/**
+	 * Forward to error page
+	 * 
+	 * @param model
+	 * @param errorMessage
+	 * @return
+	 */
 	private String createRenderPageForError(Model model, String errorMessage) {
 		model.addAttribute(gWorkspaceErrorAttributeName, errorMessage);
 		return "forward:/error_page";
 	}
 
+	/**
+	 * Forward to inform page (if not ready) or the page to input build script otherwise
+	 * 
+	 * @param model
+	 * @param newWorkspace
+	 * @return
+	 */
 	private String createRenderPageForNewWorkspace(Model model, Workspace newWorkspace) {
 		// If workspace ready, go to inform page
 		if (newWorkspace.getScriptFilePath() != null) {

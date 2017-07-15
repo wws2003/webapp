@@ -1,6 +1,7 @@
 **/.DS_Store
 **/*.sh
 **/*.db
+ProjectX/TestData
 ProjectX/target
 ProjectX/aws
 ProjectX/.bck

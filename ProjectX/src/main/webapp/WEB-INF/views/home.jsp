@@ -58,12 +58,13 @@
 					<h4>Feature milestones</h4>
 					[2014/08] Getting started with single workspace, "workspace build" means running user-written Unix script <br> [2014/11] Multiple workspaces with different build
 					scripts are now available. Workspace browsing is also supported. <br> [2015/01] Helper to import project from GitHub easier, including sparse-checkout <br>
-					[2016/03] Real-time export workspace build output to browser. Add simple build status notification via Google Chrome Extension <br> [2016/03] Allow user to upload
-					workspace local zip file then select build script while creating workspace.
+					[2016/03] Real-time export workspace build output to browser. Add simple build status notification via Google Chrome Extension <br> 
+					[2016/03] Allow user to upload workspace local zip file then select build script while creating workspace.<br> 
+					[2017/07] Add small display stuffs like breadcrumb, grid layout using JSP tag and Bootstrap3. Fix some bugs related to Zip file extraction
 				</div>
 				<div>
 					<h4>TODO List</h4>
-					[1] Deployment of better, higher level concurrency handling techniques such as Non-blocking algorithms, Write-ahead log (?) <br>
+					[1] First of all: Migration into JavaEE7 MVC on GlassFish. Other improvements are later stories<br>
 				</div>
 			</div>
 		</div>
