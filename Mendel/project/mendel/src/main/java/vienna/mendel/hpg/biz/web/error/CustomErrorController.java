@@ -1,4 +1,4 @@
-package vienna.mendel.hpg.error;
+package vienna.mendel.hpg.biz.web.error;
 
 import com.google.common.base.Throwables;
 import java.text.MessageFormat;

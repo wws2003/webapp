@@ -1,4 +1,4 @@
-package vienna.mendel.hpg.error;
+package vienna.mendel.hpg.biz.web.error;
 
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.WebRequest;

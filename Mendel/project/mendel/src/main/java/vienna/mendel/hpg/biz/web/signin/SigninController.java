@@ -1,4 +1,4 @@
-package vienna.mendel.hpg.signin;
+package vienna.mendel.hpg.biz.web.signin;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

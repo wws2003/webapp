@@ -1,4 +1,4 @@
-package vienna.mendel.hpg.home;
+package vienna.mendel.hpg.biz.web.home;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
