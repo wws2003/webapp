@@ -3,36 +3,19 @@ package vienna.mendel.hpg.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
 class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Bean
-    public TokenBasedRememberMeServices rememberMeServices() {
-        // TODO Implement
-        return null;
-        //return new TokenBasedRememberMeServices("remember-me-key", accountService);
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        // TODO Implement
-    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -45,16 +28,24 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginPage("/signin")
                 .permitAll()
                 .failureUrl("/signin?error=1")
-                .loginProcessingUrl("/authenticate")
+                .loginProcessingUrl("/authenticate") // This is not the URL to process login form !
                 .and()
                 .logout()
                 .logoutUrl("/logout")
                 .permitAll()
-                .logoutSuccessUrl("/signin?logout")
-                .and()
-                .rememberMe()
-                .rememberMeServices(rememberMeServices())
-                .key("remember-me-key");
+                .logoutSuccessUrl("/signin?logout");
+    }
+
+    @Bean(name = "userDetailsService")
+    @Override
+    protected UserDetailsService userDetailsService() {
+        // Refer from https://spring.io/guides/gs/securing-web/
+        UserDetails users = User.withDefaultPasswordEncoder()
+                .username("user")
+                .password("password")
+                .roles("USER")
+                .build();
+        return new InMemoryUserDetailsManager(users);
     }
 
     @Bean(name = "authenticationManager")
