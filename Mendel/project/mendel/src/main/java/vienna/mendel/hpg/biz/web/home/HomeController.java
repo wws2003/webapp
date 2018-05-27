@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import vienna.mendel.hpg.dto.Document;
+import vienna.mendel.hpg.model.dto.document.Document;
 
 @Controller
 class HomeController {

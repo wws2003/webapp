@@ -2,6 +2,7 @@ package vienna.mendel.hpg.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,17 +12,25 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import vienna.mendel.hpg.model.constants.MendelRole;
 
+/**
+ * Security configuration for User Role
+ *
+ * @author wws2003
+ */
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
-class SecurityConfig extends WebSecurityConfigurerAdapter {
+@Order(1)
+class SecurityUserRoleConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/", "/favicon.ico", "/resources/**", "/signup", "/about").permitAll()
+                .antMatchers("/", "/favicon.ico", "/resources/**", "/signup", "/about", "/public/**").permitAll()
+                .antMatchers("/admin/**", "/users/**").hasRole(MendelRole.ADMIN.getName())
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

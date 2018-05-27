@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package vienna.mendel.hpg.dto;
+package vienna.mendel.hpg.model.dto.document;
 
 import java.io.Serializable;
 
