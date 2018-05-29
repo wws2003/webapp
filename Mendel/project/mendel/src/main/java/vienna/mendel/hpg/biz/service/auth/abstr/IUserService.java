@@ -20,13 +20,14 @@ import vienna.mendel.hpg.model.exception.MendelRuntimeException;
 public interface IUserService {
 
     /**
-     * Find user by user name
+     * Find user by user name and role
      *
      * @param userName
+     * @param role
      * @return
      * @throws MendelRuntimeException When find operation failed
      */
-    Optional<MendelUser> findUserByName(String userName) throws MendelRuntimeException;
+    Optional<MendelUser> findUserByName(String userName, MendelRole role) throws MendelRuntimeException;
 
     /**
      * Create new user

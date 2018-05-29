@@ -31,6 +31,11 @@ public class MendelUser implements Serializable {
     private String dispName;
 
     /**
+     * Encoded password
+     */
+    private String encodedPassword;
+
+    /**
      * Role (in this system, no more one role for one user)
      */
     private MendelRole role;
@@ -94,5 +99,19 @@ public class MendelUser implements Serializable {
     @Override
     public String toString() {
         return "MendelUser{" + "id=" + id + ", name=" + name + ", dispName=" + dispName + ", role=" + role + '}';
+    }
+
+    /**
+     * @return the encodedPassword
+     */
+    public String getEncodedPassword() {
+        return encodedPassword;
+    }
+
+    /**
+     * @param encodedPassword the encodedPassword to set
+     */
+    public void setEncodedPassword(String encodedPassword) {
+        this.encodedPassword = encodedPassword;
     }
 }

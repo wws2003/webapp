@@ -22,27 +22,27 @@ import vienna.mendel.hpg.model.constants.MendelRole;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
-@Order(1)
+@Order(2)
 class SecurityUserRoleConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                // Path config
                 .authorizeRequests()
-                .antMatchers("/", "/favicon.ico", "/resources/**", "/signup", "/about", "/public/**").permitAll()
-                .antMatchers("/admin/**", "/users/**").hasRole(MendelRole.ADMIN.getName())
-                .anyRequest().authenticated()
+                .antMatchers("/", "/favicon.ico", "/resources/**", "/about", "/public/**").permitAll()
+                .anyRequest().hasRole(MendelRole.USER.getName())
                 .and()
+                // Login config
                 .formLogin()
-                .loginPage("/signin")
-                .permitAll()
-                .failureUrl("/signin?error=1")
+                .loginPage("/auth/userLogin").permitAll()
+                .failureUrl("/auth/userLogin?error=1")
                 .loginProcessingUrl("/authenticate") // This is not the URL to process login form !
                 .and()
+                // Logout config
                 .logout()
-                .logoutUrl("/logout")
-                .permitAll()
-                .logoutSuccessUrl("/signin?logout");
+                .logoutUrl("/logout").permitAll()
+                .logoutSuccessUrl("/auth/userLogin?logout");
     }
 
     @Bean(name = "userDetailsService")
