@@ -18,6 +18,11 @@ public class AuthController {
         return "auth/userLogin";
     }
 
+    /**
+     * Administrator login
+     *
+     * @return
+     */
     @GetMapping("adminLogin")
     public String adminLogin() {
         return "auth/adminLogin";

@@ -6,6 +6,7 @@
 package vienna.mendel.hpg.biz.web.admin;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -16,4 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("admin")
 public class AdminController {
 
+    /**
+     * Controller for administrator landing page
+     *
+     * @return
+     */
+    @GetMapping("/")
+    public String admin() {
+        return "admin/admin";
+    }
 }
