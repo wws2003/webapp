@@ -5,9 +5,11 @@
     </head>
     <body>
         <!--        <div th:replace="fragments/layout :: header"></div>-->
-        <form class="form-narrow form-horizontal" action="#" method="post" th:action="@{/user_authenticate}">
+        <form class="form-narrow form-horizontal" action="#" method="post" th:action="@{/user/login}">
             <th:block th:if="${param.error != null}">
-                <div th:replace="fragments/components :: alert (type='danger', message='Sign in error. Please try again.')">Alert</div>
+                <div th:replace="fragments/components :: alert (type='danger', message='Sign in error. Please try again.')">
+                    Alert
+                </div>
             </th:block>
             <fieldset>
                 <legend>Please input information</legend>

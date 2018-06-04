@@ -1,11 +1,11 @@
 package vienna.mendel.hpg.config;
 
-import vienna.mendel.hpg.Application;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import vienna.mendel.hpg.Application;
 
 @Configuration
 @PropertySource("classpath:application.properties")

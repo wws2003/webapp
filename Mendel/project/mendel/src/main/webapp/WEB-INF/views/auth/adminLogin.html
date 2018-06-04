@@ -9,7 +9,10 @@ and open the template in the editor.
         <title>Login as system administrator</title>
     </head>
     <body>
-        <form class="form-narrow form-horizontal" action="#" method="post" th:action="@{/admin_authenticate}">
+        <form class="form-narrow form-horizontal" th:action="@{/admin/login}" method="post">
+            <th:block th:if="${param.error != null}">
+                <div th:replace="fragments/components :: alert (type='danger', message='Sign in error. Please try again.')">Alert</div>
+            </th:block>
             <fieldset>
                 <legend>Please input information</legend>
                 <div class="form-group">
