@@ -18,3 +18,7 @@ ProjectX/.bck
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 .DS_Store
+/Mendel/test/new-archetype/target/
+/Mendel/lav/new-archetype/target/
+/Mendel/lab/new-archetype/target/
+

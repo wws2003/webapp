@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="fragments/commonHeader :: frg_common_header(~{::title})">
+        <title th:text="#{view.index.title}">Title</title>
+    </head>
+    <body>
+        <header>
+            <!-- Message from model attribute: The text "Default label" would be replaced by th:text value when the attribute processed -->
+            <h3 th:text="${welcomeMessage}">Default label</h3>
+            <p class="text-left">
+                Today is: <span th:text="${#dates.format(#dates.createNow(), 'YYYY/MM/dd')}">Today</span> in the locale <span th:text="${#locale.country}"></span>
+            </p>
+        </header>
+        <main class="container">
+            <div class="text-center">
+                <p>
+                    <!-- Message from resources (messages.properties) -->
+                    <label th:text="#{view.index.title}">view.index.title</label>
+                </p>
+                <p>
+                    <!-- Message from resources (home.properties) -->
+                    <label th:text="#{home.title}">home.title</label>
+                </p>
+            </div>
+            <div>
+                <a href="#">Manage my documents</a>
+                <table th:unless="${#lists.isEmpty(documents)}">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Id</th>
+                            <th>Document name</th>
+                            <th>Document comment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="document,iterState : ${documents}">
+                            <td>
+                                <a href="#" th:href="@{#}" th:text="${iterState.index}"></a>
+                            </td>
+                            <td th:text="${document.id}">
+                            </td>
+                            <td th:text="${document.name}">
+                            </td>
+                            <td th:text="${document.comment}">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <a href="#">Search public documents</a>
+                <form>
+                    <input type="text" th:attr="placeholder='Some text'"/>
+                    <button>Search</button>
+                </form>
+            </div>
+        </main>
+    </body>
+</html>
